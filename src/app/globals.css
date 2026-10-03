@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 /*
- * Light theme tokens. Style through these, never raw hex in markup.
- * Text colors meet WCAG AA against surface and canvas.
+ * Theme tokens. The values below are the light theme; the dark theme overrides
+ * the same variables under [data-theme="dark"] further down. Style through
+ * these tokens, never raw hex in markup. Text colors meet WCAG AA against
+ * surface and canvas in both themes.
  */
 @theme {
   --color-*: initial;
@@ -13,7 +15,7 @@
   --color-surface: #ffffff;
   --color-muted: #eef1f4;
   --color-border: #dfe3e8;
-  --color-border-strong: #c3c9d1;
+  --color-border-strong: #838c98;
 
   --color-text: #111827;
   --color-text-muted: #4b5563;
@@ -21,6 +23,11 @@
   --color-accent: #1d4ed8;
   --color-accent-hover: #1e40af;
   --color-accent-soft: #eaf0ff;
+  /* Text on solid accent / danger fills. */
+  --color-on-accent: #ffffff;
+  /* Toast: high-contrast against the page in either theme. */
+  --color-inverse: #111827;
+  --color-on-inverse: #ffffff;
 
   --color-success: #15803d;
   --color-success-soft: #e8f7ee;
@@ -43,6 +50,33 @@
 @layer base {
   :root {
     color-scheme: light;
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --color-canvas: #0d1117;
+    --color-surface: #161b22;
+    --color-muted: #21262d;
+    --color-border: #30363d;
+    --color-border-strong: #6e7681;
+
+    --color-text: #e6edf3;
+    --color-text-muted: #9da7b3;
+
+    --color-accent: #6ea8fe;
+    --color-accent-hover: #93bdff;
+    --color-accent-soft: #14233f;
+    --color-on-accent: #0b1220;
+    --color-inverse: #e6edf3;
+    --color-on-inverse: #0d1117;
+
+    --color-success: #4ade80;
+    --color-success-soft: #12281b;
+    --color-warning: #fbbf24;
+    --color-warning-soft: #2a2110;
+    --color-danger: #f87171;
+    --color-danger-soft: #2d1517;
   }
 
   body {

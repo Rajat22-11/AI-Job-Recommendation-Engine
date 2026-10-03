@@ -18,7 +18,7 @@ context: |
   Auth: APP_PASSWORD + HMAC-signed httpOnly session cookie (SESSION_SECRET); src/proxy.ts redirects, and every
   page and Server Action re-checks the session (requireSession / assertSession).
   Private app: always noindex, robots.txt disallows all; no sitemap, canonicals, route registry or content layer.
-  UI: light theme only; style through @theme tokens in src/app/globals.css (no raw hex in markup); minimal client
+  UI: dark theme by default with a Dark/Light/System choice kept in a cookie; style through @theme tokens in src/app/globals.css (no raw hex in markup); minimal client
   JS (client islands only where needed); forms work without JavaScript; 44px touch targets; usable at 360px.
   Add directories and dependencies only when a change actually needs them.
   Quality gate: pnpm check (lint + typecheck + format:check + test) and pnpm build must pass.

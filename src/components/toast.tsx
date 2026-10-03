@@ -71,8 +71,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             role={toast.tone === "error" ? "alert" : "status"}
             className={`pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-xl px-4 py-2 text-sm shadow-lg ${
               toast.tone === "error"
-                ? "bg-danger text-white"
-                : "bg-text text-white"
+                ? "bg-danger text-on-accent"
+                : "bg-inverse text-on-inverse"
             }`}
           >
             <span className="min-w-0 flex-1 truncate">{toast.message}</span>

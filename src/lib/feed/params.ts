@@ -196,3 +196,16 @@ function groupParams(query: string): Map<string, string[]> {
   }
   return grouped;
 }
+
+/**
+ * The canonical query ("" or "?...") for a filter form's current values.
+ * Goes through the same parser as the URL, so the result is what the server
+ * will see, and `page` is always dropped.
+ */
+export function feedQueryFromForm(data: FormData): string {
+  const raw: Record<string, string[]> = {};
+  for (const [key, value] of data.entries()) {
+    if (typeof value === "string") (raw[key] ??= []).push(value);
+  }
+  return serializeFeedParams({ ...parseFeedParams(raw), page: 1 });
+}

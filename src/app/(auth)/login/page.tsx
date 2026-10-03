@@ -4,6 +4,8 @@ import { hasSession } from "@/lib/auth/session";
 import { safeNextPath } from "@/lib/auth/token";
 import { getAuthConfig } from "@/lib/env";
 import { siteName } from "@/lib/site";
+import { readTheme } from "@/lib/theme-server";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { card } from "@/components/ui";
 import { LoginForm } from "./login-form";
 
@@ -18,6 +20,9 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
   return (
     <main className="flex min-h-dvh items-center justify-center px-4">
+      <div className="absolute top-2 right-4">
+        <ThemeToggle initial={await readTheme()} />
+      </div>
       <div className={`${card} w-full max-w-sm p-6`}>
         <h1 className="mb-1 text-xl font-semibold">{siteName}</h1>
         <p className="mb-6 text-sm text-text-muted">

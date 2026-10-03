@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   activeFilterCount,
   DEFAULT_FILTERS,
+  feedQueryFromForm,
   feedHref,
   parseFeedParams,
   safeFeedQuery,
@@ -149,3 +150,72 @@ function group(query: string): Map<string, string[]> {
     grouped.set(k, [...(grouped.get(k) ?? []), v]);
   return grouped;
 }
+
+describe("feedQueryFromForm", () => {
+  const form = (entries: [string, string][]) => {
+    const data = new FormData();
+    for (const [key, value] of entries) data.append(key, value);
+    return data;
+  };
+
+  it("is empty for the default view", () => {
+    expect(
+      feedQueryFromForm(
+        form([
+          ["q", ""],
+          ["sort", "fit"],
+          ["status", "new"],
+          ["status", "saved"],
+          ["fit", "3"],
+          ["salary", "any"],
+          ["posted", ""],
+        ]),
+      ),
+    ).toBe("");
+  });
+
+  it("repeats keys for checkbox groups", () => {
+    expect(
+      feedQueryFromForm(
+        form([
+          ["loc", "pune"],
+          ["loc", "remote_india"],
+          ["sort", "newest"],
+        ]),
+      ),
+    ).toBe("?loc=pune&loc=remote_india&sort=newest");
+  });
+
+  it("keeps the 24h preset from the hidden input and never emits page", () => {
+    expect(
+      feedQueryFromForm(
+        form([
+          ["seen", "24h"],
+          ["page", "4"],
+        ]),
+      ),
+    ).toBe("?seen=24h");
+  });
+
+  it("drops invalid values the way the URL parser does", () => {
+    expect(
+      feedQueryFromForm(
+        form([
+          ["fit", "9"],
+          ["sort", "random"],
+        ]),
+      ),
+    ).toBe("");
+  });
+
+  it("round-trips through the parser", () => {
+    const query = feedQueryFromForm(
+      form([
+        ["track", "ml_ai"],
+        ["fit", "4"],
+        ["q", " python "],
+      ]),
+    );
+    expect(query).toBe("?track=ml_ai&fit=4&q=python");
+  });
+});

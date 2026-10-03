@@ -1,4 +1,7 @@
-import Link from "next/link";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import {
   FEED_STATUSES,
   LOCATION_BUCKET_LABELS,
@@ -14,8 +17,15 @@ import {
   POSTED_WITHIN,
   SORT_LABELS,
   SORTS,
+  DEFAULT_STATUSES,
+  feedQueryFromForm,
+  serializeFeedParams,
   type FeedFilters,
 } from "@/lib/feed/params";
+import {
+  FilterLink,
+  useFilterNavigation,
+} from "@/components/filter-navigation";
 import { btnPrimary, btnSecondary, input, label } from "@/components/ui";
 
 interface Option {
@@ -92,9 +102,26 @@ const toOptions = <T extends string>(
   labels: Record<T, string>,
 ) => values.map((value) => ({ value, label: labels[value] }));
 
+// Selects apply at once; checkboxes wait for a run of ticks to finish; search
+// waits for a pause in typing (Enter applies immediately).
+const SELECT_DELAY_MS = 0;
+const CHECKBOX_DELAY_MS = 700;
+const TEXT_DELAY_MS = 400;
+
+function delayFor(target: EventTarget): number {
+  if (target instanceof HTMLSelectElement) return SELECT_DELAY_MS;
+  if (target instanceof HTMLInputElement && target.type === "checkbox") {
+    return CHECKBOX_DELAY_MS;
+  }
+  return TEXT_DELAY_MS;
+}
+
 /**
- * Plain GET form: works without JavaScript, and leaves out `page` so any
- * filter change goes back to page 1. Collapsed on phones, always open on lg.
+ * Filters apply themselves: any change navigates in place (no history entry,
+ * no scroll) after a short debounce. Still a plain GET form underneath, so
+ * without JavaScript the noscript button submits it, and a submit leaves out
+ * `page` so any filter change goes back to page 1. Collapsed on phones, always
+ * open on lg.
  */
 export function FilterPanel({
   filters,
@@ -103,8 +130,58 @@ export function FilterPanel({
   filters: FeedFilters;
   sources: { id: string; name: string }[];
 }) {
+  const { navigate } = useFilterNavigation();
   const count = activeFilterCount(filters);
   const statuses = filters.status === "all" ? ["all"] : filters.status;
+  const queryKey = serializeFeedParams(filters);
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  // The inputs are uncontrolled, so they keep the user's focus and scroll
+  // position while the URL catches up. When the URL changes for any other
+  // reason (a chip, Reset, "New today"), remount the form to show it.
+  const [own, setOwn] = useState(queryKey);
+  const [sync, setSync] = useState({ query: queryKey, version: 0 });
+  if (sync.query !== queryKey) {
+    const external = queryKey !== own;
+    setSync({ query: queryKey, version: sync.version + (external ? 1 : 0) });
+    if (external) setOwn(queryKey);
+  }
+
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  function apply() {
+    clearTimeout(timer.current);
+    const form = formRef.current;
+    if (!form) return;
+    let data = new FormData(form);
+    if (data.getAll("status").length === 0) {
+      // No status ticked means the default view, so show those ticks.
+      for (const box of form.querySelectorAll<HTMLInputElement>(
+        'input[name="status"]',
+      )) {
+        box.checked = (DEFAULT_STATUSES as readonly string[]).includes(
+          box.value,
+        );
+      }
+      data = new FormData(form);
+    }
+    const query = feedQueryFromForm(data);
+    setOwn(query);
+    navigate(`/${query}`);
+  }
+
+  function schedule(delay: number) {
+    clearTimeout(timer.current);
+    if (delay === 0) apply();
+    else timer.current = setTimeout(apply, delay);
+  }
+
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    schedule(0);
+  }
 
   return (
     <details className="group rounded-xl border border-border bg-surface lg:[&::details-content]:block lg:[&::details-content]:[content-visibility:visible]">
@@ -117,7 +194,15 @@ export function FilterPanel({
           ▾
         </span>
       </summary>
-      <form action="/" method="get" className="space-y-4 p-4 pt-2 lg:pt-4">
+      <form
+        key={sync.version}
+        ref={formRef}
+        action="/"
+        method="get"
+        onChange={(event) => schedule(delayFor(event.target))}
+        onSubmit={onSubmit}
+        className="space-y-4 p-4 pt-2 lg:pt-4"
+      >
         <div>
           <label htmlFor="q" className={label}>
             Search
@@ -220,12 +305,21 @@ export function FilterPanel({
         {filters.seen24h && <input type="hidden" name="seen" value="24h" />}
 
         <div className="flex gap-2">
-          <button type="submit" className={`${btnPrimary} flex-1`}>
-            Apply filters
-          </button>
-          <Link href="/" className={btnSecondary}>
+          <noscript>
+            <button type="submit" className={`${btnPrimary} flex-1`}>
+              Apply filters
+            </button>
+          </noscript>
+          <FilterLink
+            href="/"
+            onClick={() => {
+              clearTimeout(timer.current);
+              setSync((s) => ({ ...s, version: s.version + 1 }));
+            }}
+            className={`${btnSecondary} flex-1`}
+          >
             Reset filters
-          </Link>
+          </FilterLink>
         </div>
       </form>
     </details>

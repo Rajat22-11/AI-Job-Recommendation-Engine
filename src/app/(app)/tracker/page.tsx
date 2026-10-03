@@ -98,7 +98,7 @@ export default async function TrackerPage({
                 aria-current={s === selected ? "page" : undefined}
                 className={`inline-flex tap items-center gap-1 rounded-full px-3 text-sm font-medium whitespace-nowrap ${
                   s === selected
-                    ? "bg-accent text-white"
+                    ? "bg-accent text-on-accent"
                     : "border border-border bg-surface text-text-muted"
                 }`}
               >

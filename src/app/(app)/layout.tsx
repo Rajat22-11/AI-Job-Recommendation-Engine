@@ -3,8 +3,10 @@ import { Suspense } from "react";
 import { logout } from "@/lib/actions/auth";
 import { requireSession } from "@/lib/auth/session";
 import { siteName } from "@/lib/site";
+import { readTheme } from "@/lib/theme-server";
 import { LoginBanner } from "@/components/login-banner";
 import { NavLinks } from "@/components/nav-links";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { ToastProvider } from "@/components/toast";
 import { btnGhost } from "@/components/ui";
 
@@ -27,6 +29,7 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
           >
             <NavLinks />
           </nav>
+          <ThemeToggle initial={await readTheme()} />
           <form action={logout}>
             <button type="submit" className={btnGhost}>
               Log out
