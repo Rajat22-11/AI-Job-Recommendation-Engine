@@ -1,0 +1,29 @@
+# Render Blueprint: one Node web service (see openspec change implement-ui, design D1).
+# Field names follow Render's current Blueprint spec (autoDeployTrigger replaces autoDeploy).
+services:
+  - type: web
+    name: ai-job-recommendation-ui
+    runtime: node
+    region: singapore # closest to the ap-south-1 database; can't be changed after creation
+    plan: free # spins down after ~15 min idle; first request then takes ~30-60s
+    branch: main # Render's default is master
+    autoDeployTrigger: commit
+    # Render's image already ships pnpm via corepack (read-only /usr/bin, so `corepack enable` fails
+    # with EROFS). pnpm picks up the version pinned in package.json's packageManager field.
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    healthCheckPath: /api/health
+    previews:
+      generation: off
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      # Secrets: entered in the Render dashboard when the Blueprint is applied.
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: APP_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
