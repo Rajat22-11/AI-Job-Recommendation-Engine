@@ -7,7 +7,11 @@ import {
   quickActionForm,
   restoreApplication,
 } from "@/lib/actions/applications";
-import { QUICK_ACTION_STATUS, type QuickAction } from "@/lib/applications";
+import {
+  QUICK_ACTION_STATUS,
+  removesApplication,
+  type QuickAction,
+} from "@/lib/applications";
 import type { FeedStatus } from "@/lib/db/domain";
 import { useToast } from "@/components/toast";
 
@@ -16,6 +20,7 @@ const DONE_MESSAGE: Record<QuickAction, string> = {
   apply: "Marked applied",
   skip: "Skipped",
   unsave: "Removed from saved",
+  restore: "Restored",
 };
 
 const button =
@@ -44,7 +49,7 @@ export function TriageActions({
     event.preventDefault();
     startTransition(async () => {
       setOptimisticStatus(
-        action === "unsave" ? "new" : QUICK_ACTION_STATUS[action],
+        removesApplication(action) ? "new" : QUICK_ACTION_STATUS[action],
       );
       const result = await quickAction(jobId, action);
       if (!result.ok) {
@@ -90,16 +95,15 @@ export function TriageActions({
       >
         Applied
       </button>
+      {/* A skipped job offers Restore, which makes it new again. */}
       <button
         type="submit"
         name="action"
-        value="skip"
-        aria-pressed={skipped}
-        disabled={skipped}
-        onClick={(e) => run(e, "skip")}
+        value={skipped ? "restore" : "skip"}
+        onClick={(e) => run(e, skipped ? "restore" : "skip")}
         className={`${button} ${skipped ? active : idle}`}
       >
-        Skip
+        {skipped ? "Restore" : "Skip"}
       </button>
     </form>
   );

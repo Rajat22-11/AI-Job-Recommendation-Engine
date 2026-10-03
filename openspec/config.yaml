@@ -1,27 +1,61 @@
 schema: spec-driven
 
 context: |
-  Product: ai-job-recommendation-ui ("Job Tracker"), a private, single-user, mobile-first web app over the
-  existing Supabase project "Jobs Recommendation Engine" (ap-south-1). A separate scraper owns the schema and
-  fills jobs/job_sources/source_runs; this app never changes the schema (no tables, views, functions, policies).
-  Stack: Next.js 16 App Router (no pages/), React 19, TypeScript 5 (strict, noUncheckedIndexedAccess),
-  Tailwind CSS v4 (CSS-first @theme), ESLint 9 flat config (next core-web-vitals + typescript + prettier),
-  Prettier with prettier-plugin-tailwindcss, zod for input validation, vitest for unit tests.
-  TypeScript 7 and ESLint 10 are blocked by eslint-config-next peers.
-  Package manager: pnpm 12 only (packageManager field); Node 24. LF line endings.
-  Hosting: Render Web Service (runtime node, region singapore, Free plan, cold starts accepted) via render.yaml,
-  auto-deploy on commits to main, health check /api/health. Request-time server features are allowed.
-  Data: all DB access is server-side via supabase-js with SUPABASE_SERVICE_ROLE_KEY (src/lib/db, `server-only`).
-  No Supabase value may ever reach the browser or use a NEXT_PUBLIC_ name. Generated types live in
-  src/lib/db/database.types.ts (pnpm db:types); CHECK-constrained values are mirrored in src/lib/db/domain.ts.
-  Dates: India Standard Time (Asia/Kolkata) for every calendar date shown or written (src/lib/dates.ts).
-  Auth: APP_PASSWORD + HMAC-signed httpOnly session cookie (SESSION_SECRET); src/proxy.ts redirects, and every
-  page and Server Action re-checks the session (requireSession / assertSession).
-  Private app: always noindex, robots.txt disallows all; no sitemap, canonicals, route registry or content layer.
-  UI: dark theme by default with a Dark/Light/System choice kept in a cookie; style through @theme tokens in src/app/globals.css (no raw hex in markup); minimal client
-  JS (client islands only where needed); forms work without JavaScript; 44px touch targets; usable at 360px.
-  Add directories and dependencies only when a change actually needs them.
-  Quality gate: pnpm check (lint + typecheck + format:check + test) and pnpm build must pass.
+  Job Tracker (ai-job-recommendation-ui): a private, single-user, mobile-first web app over the existing
+  Supabase project "Jobs Recommendation Engine" (ap-south-1).
+
+  Auth
+  - APP_PASSWORD plus an HMAC-signed, httpOnly session cookie (SESSION_SECRET).
+  - src/proxy.ts redirects; every page and Server Action re-checks the session (requireSession / assertSession).
+
+  Data access
+  - All database access is server-side via supabase-js with SUPABASE_SERVICE_ROLE_KEY (src/lib/db, `server-only`).
+  - No Supabase value may reach the browser or use a NEXT_PUBLIC_ name.
+  - Generated types live in src/lib/db/database.types.ts (pnpm db:types).
+  - CHECK-constrained values are mirrored in src/lib/db/domain.ts.
+
+  Database schema
+  - The daily scraper (the "trigger", an AI agent with no repo of its own) fills jobs, job_sources, source_runs,
+    runs and source_run_queries, and learns source templates. It writes data only, never DDL.
+  - This repo owns the schema. Every change is a migration in supabase/migrations/<version>_<name>.sql whose
+    version matches the database's migration history (applied via the Supabase migration API).
+  - Migrations are additive and idempotent, and never narrow a value set the trigger writes.
+  - Every table keeps RLS enabled with no policies; every view keeps security_invoker = true.
+
+  Dates
+  - India Standard Time (Asia/Kolkata) for every calendar date shown or written (src/lib/dates.ts).
+
+  Hosting
+  - Render Web Service via render.yaml: runtime node, region singapore, Free plan (cold starts accepted).
+  - Auto-deploys on commits to main; health check /api/health.
+  - Request-time server features are allowed.
+
+  Privacy
+  - Always noindex; robots.txt disallows all.
+  - No sitemap, canonicals, route registry or content layer.
+
+  Project rules
+  - Add directories and dependencies only when a change actually needs them.
+  - Quality gate: pnpm check (lint + typecheck + format:check + test) and pnpm build must pass.
+
+  Stack
+  - Next.js 16 App Router (no pages/), React 19.
+  - TypeScript 5 (strict, noUncheckedIndexedAccess).
+  - Tailwind CSS v4 (CSS-first @theme).
+  - ESLint 9 flat config (next core-web-vitals + typescript + prettier).
+  - Prettier with prettier-plugin-tailwindcss.
+  - zod for input validation; vitest for unit tests.
+  - TypeScript 7 and ESLint 10 are blocked by eslint-config-next peers.
+
+  Tooling
+  - pnpm 12 only (packageManager field); Node 24.
+  - LF line endings.
+
+  UI
+  - Dark theme by default, with a Dark / Light / System choice kept in a cookie.
+  - Style through @theme tokens in src/app/globals.css; no raw hex in markup.
+  - Minimal client JS (client islands only where needed); forms work without JavaScript.
+  - 44px touch targets; usable at 360px wide.
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.

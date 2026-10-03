@@ -7,6 +7,7 @@ const links = [
   { href: "/", label: "Feed" },
   { href: "/tracker", label: "Tracker" },
   { href: "/sources", label: "Sources" },
+  { href: "/runs", label: "Runs" },
   { href: "/settings", label: "Settings" },
 ] as const;
 

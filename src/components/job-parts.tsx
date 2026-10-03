@@ -1,5 +1,6 @@
 import { sourceName } from "@/lib/db/client";
 import {
+  APPLY_URL_KIND_LABELS,
   labelFor,
   LOCATION_BUCKET_LABELS,
   ROLE_TRACK_LABELS,
@@ -7,7 +8,13 @@ import {
   WORK_MODE_LABELS,
 } from "@/lib/db/domain";
 import type { FeedJob } from "@/lib/db/jobs";
-import { formatFit, formatSalary, formatYoe, isNewJob } from "@/lib/format";
+import {
+  formatFit,
+  formatYoe,
+  isNewJob,
+  salaryDisplay,
+  salaryState,
+} from "@/lib/format";
 import { Badge } from "@/components/badge";
 import { btnPrimary } from "@/components/ui";
 
@@ -32,12 +39,18 @@ export function JobBadges({ job }: { job: FeedJob }) {
 
 export function SalaryLine({ job }: { job: FeedJob }) {
   const yoe = formatYoe(job.minYoe, job.maxYoe);
+  const state = salaryState(job);
   return (
     <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-      <span className={job.salaryText ? "font-medium" : "text-text-muted"}>
-        {formatSalary(job.salaryText)}
-      </span>
+      {state === "not_disclosed" ? (
+        <Badge>Salary not disclosed</Badge>
+      ) : (
+        <span className="font-medium">{salaryDisplay(job)}</span>
+      )}
       {job.salaryMeetsMin === true && <Badge tone="success">Meets min</Badge>}
+      {state === "not_compared" && (
+        <span className="text-xs text-text-muted">not compared</span>
+      )}
       {yoe && (
         <>
           <span aria-hidden="true" className="text-text-muted">
@@ -101,14 +114,26 @@ export function ApplyLink({
   job: FeedJob;
   className?: string;
 }) {
+  const kind = job.applyUrlKind
+    ? APPLY_URL_KIND_LABELS[job.applyUrlKind]
+    : null;
   return (
     <a
       href={job.applyUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${btnPrimary} ${className}`}
+      className={`${btnPrimary} flex-col gap-0 leading-tight ${className}`}
     >
-      Apply <span aria-hidden="true">↗</span>
+      <span>
+        Apply <span aria-hidden="true">↗</span>
+      </span>
+      {/* Where the link goes: the employer's own site or a job board. */}
+      {kind && (
+        <span className="text-[11px] font-normal opacity-90">
+          <span className="sr-only">, </span>
+          {kind}
+        </span>
+      )}
       <span className="sr-only"> (opens in a new tab)</span>
     </a>
   );

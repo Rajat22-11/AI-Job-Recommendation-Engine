@@ -1,10 +1,25 @@
 import type { AppStatus } from "@/lib/db/domain";
 
-export const QUICK_ACTIONS = ["save", "apply", "skip", "unsave"] as const;
+export const QUICK_ACTIONS = [
+  "save",
+  "apply",
+  "skip",
+  "unsave",
+  "restore",
+] as const;
 export type QuickAction = (typeof QUICK_ACTIONS)[number];
 
+/** Actions that remove the application record, so the job is `new` again. */
+const REMOVING_ACTIONS: readonly QuickAction[] = ["unsave", "restore"];
+
+export function removesApplication(
+  action: QuickAction,
+): action is "unsave" | "restore" {
+  return REMOVING_ACTIONS.includes(action);
+}
+
 export const QUICK_ACTION_STATUS: Record<
-  Exclude<QuickAction, "unsave">,
+  Exclude<QuickAction, "unsave" | "restore">,
   AppStatus
 > = {
   save: "saved",
@@ -40,6 +55,6 @@ export function quickActionPlan(
   existing: ExistingApplication | null,
   today: string,
 ): ApplicationPlan {
-  if (action === "unsave") return { kind: "delete" };
+  if (removesApplication(action)) return { kind: "delete" };
   return statusChangePlan(QUICK_ACTION_STATUS[action], existing, today);
 }

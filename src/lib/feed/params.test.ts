@@ -4,9 +4,14 @@ import {
   DEFAULT_FILTERS,
   feedQueryFromForm,
   feedHref,
+  hiddenSkippedText,
+  hidesSkipped,
+  NEW_TODAY_FILTERS,
+  NEW_TODAY_HREF,
   parseFeedParams,
   safeFeedQuery,
   serializeFeedParams,
+  showSkippedHref,
 } from "./params";
 import {
   caseVariants,
@@ -217,5 +222,49 @@ describe("feedQueryFromForm", () => {
       ]),
     );
     expect(query).toBe("?track=ml_ai&fit=4&q=python");
+  });
+});
+
+describe("salary filter values", () => {
+  it.each(["meets", "not_disclosed", "unparsed", "unknown"] as const)(
+    "round-trips salary=%s",
+    (salary) => {
+      const f = parseFeedParams({ salary });
+      expect(f.salary).toBe(salary);
+      expect(serializeFeedParams(f)).toBe(`?salary=${salary}`);
+    },
+  );
+});
+
+describe("hidden skipped jobs", () => {
+  it("applies only when the status filter excludes skipped", () => {
+    expect(hidesSkipped(DEFAULT_FILTERS)).toBe(true);
+    expect(hidesSkipped({ ...DEFAULT_FILTERS, status: "all" })).toBe(false);
+    expect(
+      hidesSkipped({ ...DEFAULT_FILTERS, status: ["new", "skipped"] }),
+    ).toBe(false);
+  });
+
+  it("links to the same view with skipped added", () => {
+    expect(showSkippedHref(DEFAULT_FILTERS)).toBe(
+      "/?status=new&status=saved&status=skipped",
+    );
+    expect(
+      showSkippedHref({ ...DEFAULT_FILTERS, loc: ["pune"], page: 2 }),
+    ).toBe("/?loc=pune&status=new&status=saved&status=skipped");
+  });
+
+  it("pluralizes the notice", () => {
+    expect(hiddenSkippedText(1)).toBe("1 skipped job hidden");
+    expect(hiddenSkippedText(4)).toBe("4 skipped jobs hidden");
+  });
+});
+
+describe("new today preset", () => {
+  it("is new jobs first seen in 24h at any fit, ignoring other filters", () => {
+    expect(NEW_TODAY_HREF).toBe("/?status=new&fit=0&seen=24h");
+    expect(parseFeedParams({ status: "new", fit: "0", seen: "24h" })).toEqual(
+      NEW_TODAY_FILTERS,
+    );
   });
 });

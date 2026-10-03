@@ -51,3 +51,16 @@ describe("activeFilterChips", () => {
     expect(chips("source=other_site")[0]?.label).toBe("other_site");
   });
 });
+
+describe("salary chips", () => {
+  it.each([
+    ["meets", "Meets my minimum"],
+    ["not_disclosed", "Salary not disclosed"],
+    ["unparsed", "Salary not compared"],
+    ["unknown", "Salary unknown"],
+  ])("labels salary=%s as %s", (salary, label) => {
+    const [chip] = chips(`salary=${salary}`);
+    expect(chip?.label).toBe(label);
+    expect(chip?.href).toBe("/");
+  });
+});

@@ -12,8 +12,26 @@ import {
 
 export const PAGE_SIZE = 25;
 
-export const SALARY_FILTERS = ["any", "meets", "unknown"] as const;
+/**
+ * `not_disclosed` and `unparsed` split the older `unknown`
+ * (`salary_meets_min` empty), which still works for existing links.
+ */
+export const SALARY_FILTERS = [
+  "any",
+  "meets",
+  "not_disclosed",
+  "unparsed",
+  "unknown",
+] as const;
 export type SalaryFilter = (typeof SALARY_FILTERS)[number];
+
+export const SALARY_FILTER_LABELS: Record<SalaryFilter, string> = {
+  any: "Any",
+  meets: "Meets my minimum",
+  not_disclosed: "Not disclosed",
+  unparsed: "Not compared",
+  unknown: "Salary unknown",
+};
 
 export const POSTED_WITHIN = [1, 3, 7, 30] as const;
 export type PostedWithin = (typeof POSTED_WITHIN)[number];
@@ -162,6 +180,36 @@ export function feedHref(
   const page = "page" in changes ? (changes.page ?? 1) : 1;
   return `/${serializeFeedParams({ ...filters, ...changes, page })}`;
 }
+
+/** Whether the status filter hides skipped jobs, so a hidden count is worth showing. */
+export function hidesSkipped(filters: FeedFilters): boolean {
+  return filters.status !== "all" && !filters.status.includes("skipped");
+}
+
+/** The same view with skipped jobs added back. */
+export function showSkippedHref(filters: FeedFilters): string {
+  return feedHref(
+    filters,
+    filters.status === "all" ? {} : { status: [...filters.status, "skipped"] },
+  );
+}
+
+export function hiddenSkippedText(count: number): string {
+  return count === 1 ? "1 skipped job hidden" : `${count} skipped jobs hidden`;
+}
+
+/**
+ * "New today": active jobs first seen in the last 24 hours that are still
+ * `new`, at any fit score. Independent of the current filters.
+ */
+export const NEW_TODAY_FILTERS: FeedFilters = {
+  ...DEFAULT_FILTERS,
+  status: ["new"],
+  fit: 0,
+  seen24h: true,
+};
+
+export const NEW_TODAY_HREF = `/${serializeFeedParams(NEW_TODAY_FILTERS)}`;
 
 /** Number of filters that differ from the default view (sort and page excluded). */
 export function activeFilterCount(filters: FeedFilters): number {

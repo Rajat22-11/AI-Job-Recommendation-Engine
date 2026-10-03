@@ -2,13 +2,20 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import { requireSession } from "@/lib/auth/session";
 import { getSourceNames } from "@/lib/db/client";
-import { countNewToday, getFeedPage } from "@/lib/db/queries/feed";
+import {
+  countHiddenSkipped,
+  countNewToday,
+  getFeedPage,
+} from "@/lib/db/queries/feed";
 import {
   activeFilterCount,
   feedHref,
+  hiddenSkippedText,
+  NEW_TODAY_HREF,
   PAGE_SIZE,
   parseFeedParams,
   serializeFeedParams,
+  showSkippedHref,
 } from "@/lib/feed/params";
 import { activeFilterChips } from "@/lib/feed/chips";
 import { ActiveFilterChips } from "@/components/active-filter-chips";
@@ -28,9 +35,10 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
   await requireSession();
   const filters = parseFeedParams(await searchParams);
 
-  const [{ jobs, total }, newToday, names] = await Promise.all([
+  const [{ jobs, total }, newToday, hiddenSkipped, names] = await Promise.all([
     getFeedPage(filters),
     countNewToday(),
+    countHiddenSkipped(filters),
     getSourceNames(),
   ]);
 
@@ -57,12 +65,24 @@ export default async function FeedPage({ searchParams }: PageProps<"/">) {
             </p>
             <FilterSpinner />
             <FilterLink
-              href={href({ seen24h: true, status: ["new"] })}
+              href={NEW_TODAY_HREF as Route}
               className="ml-auto inline-flex min-h-9 items-center rounded-full bg-accent-soft px-3 text-sm font-medium text-accent hover:underline"
             >
               New today ({newToday})
             </FilterLink>
           </div>
+
+          {hiddenSkipped !== null && hiddenSkipped > 0 && (
+            <p className="mb-3 text-sm text-text-muted">
+              {hiddenSkippedText(hiddenSkipped)} ·{" "}
+              <FilterLink
+                href={showSkippedHref(filters) as Route}
+                className="inline-flex min-h-9 items-center font-medium text-accent hover:underline"
+              >
+                Show
+              </FilterLink>
+            </p>
+          )}
 
           <ActiveFilterChips chips={activeFilterChips(filters, names)} />
 

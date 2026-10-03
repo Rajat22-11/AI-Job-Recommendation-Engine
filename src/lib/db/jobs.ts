@@ -1,4 +1,10 @@
-import { FEED_STATUSES, isOneOf, type FeedStatus } from "@/lib/db/domain";
+import {
+  APPLY_URL_KINDS,
+  FEED_STATUSES,
+  isOneOf,
+  type ApplyUrlKind,
+  type FeedStatus,
+} from "@/lib/db/domain";
 import type { Database, Json } from "./database.types";
 
 type FeedRow = Database["public"]["Views"]["job_feed"]["Row"];
@@ -27,6 +33,7 @@ export interface FeedJob {
   skills: string[];
   summary: string | null;
   applyUrl: string;
+  applyUrlKind: ApplyUrlKind | null;
   postedAt: string | null;
   fitScore: number | null;
   fitReason: string | null;
@@ -72,6 +79,9 @@ export function toFeedJob(row: FeedRow): FeedJob {
     skills: row.skills ?? [],
     summary: row.summary,
     applyUrl: row.apply_url ?? "",
+    applyUrlKind: isOneOf(APPLY_URL_KINDS, row.apply_url_kind)
+      ? row.apply_url_kind
+      : null,
     postedAt: row.posted_at,
     fitScore: row.fit_score,
     fitReason: row.fit_reason,

@@ -4,8 +4,14 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { assertSession } from "@/lib/auth/session";
 import { db } from "@/lib/db/client";
-import { ACCESS_METHODS } from "@/lib/db/domain";
+import { ACCESS_METHODS, TEMPLATELESS_ACCESS_METHODS } from "@/lib/db/domain";
 import { SOURCE_ID_PATTERN } from "@/lib/feed/params";
+import {
+  deriveSourceId,
+  sameSiteSource,
+  sourceUpdatePayload,
+  templateChanged,
+} from "@/lib/source-edits";
 import { isHttpUrl, normalizeList, templateError } from "@/lib/templates";
 
 const UNIQUE_VIOLATION = "23505";
@@ -93,7 +99,7 @@ async function saveSearchConfigFields(
   return { saved: true, savedAt };
 }
 
-const sourceSchema = z.object({
+const newSourceSchema = z.object({
   name: z
     .string()
     .trim()
@@ -106,17 +112,7 @@ const sourceSchema = z.object({
       isHttpUrl,
       "Enter an absolute http(s) URL, e.g. https://example.com",
     ),
-  access_method: z.enum(ACCESS_METHODS, "Choose an access method"),
-  search_url_template: z
-    .string()
-    .trim()
-    .superRefine((value, ctx) => {
-      const message = value ? templateError(value) : null;
-      if (message) ctx.addIssue({ code: "custom", message });
-    })
-    .transform((v) => v || null),
   requires_login: z.string().transform((v) => v === "on"),
-  enabled: z.string().transform((v) => v === "on"),
   notes: z
     .string()
     .trim()
@@ -124,28 +120,88 @@ const sourceSchema = z.object({
     .transform((v) => v || null),
 });
 
-const newSourceSchema = sourceSchema.extend({
-  id: z
-    .string()
-    .trim()
-    .regex(SOURCE_ID_PATTERN, "2–40 lowercase letters, digits, - or _"),
-});
+// The override fields are only written when they differ from the hidden
+// originals, and only a changed template is validated (a learned one may use
+// placeholders the app doesn't know).
+const editSourceSchema = newSourceSchema
+  .extend({
+    enabled: z.string().transform((v) => v === "on"),
+    access_method: z.union(
+      [z.literal(""), z.enum(ACCESS_METHODS)],
+      "Choose an access method",
+    ),
+    search_url_template: z.string(),
+    orig_access_method: z.string(),
+    orig_search_url_template: z.string(),
+  })
+  .superRefine((value, ctx) => {
+    const template = value.search_url_template.trim();
+    if (!template || !templateChanged(value)) return;
+    const message = templateError(template);
+    if (message) {
+      ctx.addIssue({ code: "custom", message, path: ["search_url_template"] });
+    }
+  });
 
-const SOURCE_FIELDS = [...Object.keys(newSourceSchema.shape)];
+const NEW_SOURCE_FIELDS = Object.keys(newSourceSchema.shape);
+const EDIT_SOURCE_FIELDS = [
+  ...NEW_SOURCE_FIELDS,
+  "enabled",
+  "access_method",
+  "search_url_template",
+  "orig_access_method",
+  "orig_search_url_template",
+];
 
 async function createSourceFields(
   _prev: FormState,
   formData: FormData,
 ): Promise<FormState> {
   await assertSession();
-  const values = formValues(formData, SOURCE_FIELDS);
+  const values = formValues(formData, NEW_SOURCE_FIELDS);
   const parsed = newSourceSchema.safeParse(values);
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
+  const form = parsed.data;
 
-  const { error } = await db().from("sources").insert(parsed.data);
-  if (error?.code === UNIQUE_VIOLATION) {
-    return { errors: { id: "A source with this id already exists" }, values };
+  const { data: existing, error: loadError } = await db()
+    .from("sources")
+    .select("id, name, base_url");
+  if (loadError) {
+    console.error("createSource failed", loadError);
+    return { formError: "Couldn't add the source. Try again.", values };
   }
+
+  const sameSite = sameSiteSource(form.base_url, existing);
+  if (sameSite) {
+    return {
+      errors: { base_url: `${sameSite.name} already uses this site` },
+      values,
+    };
+  }
+
+  // A new source waits for the trigger to learn its search URL template.
+  const insert = (id: string) =>
+    db()
+      .from("sources")
+      .insert({
+        ...form,
+        id,
+        enabled: true,
+        access_method: "auto",
+        search_url_template: null,
+        template_status: "unverified",
+        template_origin: null,
+      });
+
+  const taken = existing.map((s) => s.id);
+  let id = deriveSourceId(form.name, form.base_url, taken);
+  let { error } = id ? await insert(id) : { error: null };
+  // Another source may have taken the id since it was loaded: try the next one.
+  if (id && error?.code === UNIQUE_VIOLATION) {
+    id = deriveSourceId(form.name, form.base_url, [...taken, id]);
+    ({ error } = id ? await insert(id) : { error: null });
+  }
+  if (!id) return { errors: { name: "Choose a different name" }, values };
   if (error) {
     console.error("createSource failed", error);
     return { formError: "Couldn't add the source. Try again.", values };
@@ -159,19 +215,46 @@ async function updateSourceFields(
   formData: FormData,
 ): Promise<FormState> {
   await assertSession();
-  const values = formValues(formData, SOURCE_FIELDS);
+  const values = formValues(formData, EDIT_SOURCE_FIELDS);
   const id = String(formData.get("id") ?? "");
-  const parsed = sourceSchema.safeParse(values);
+  const parsed = editSourceSchema.safeParse(values);
   if (!parsed.success) return { errors: fieldErrors(parsed.error), values };
+  const { name, base_url, requires_login, enabled, notes, ...override } =
+    parsed.data;
 
   // The id is never updated: job links and run history refer to it.
-  const { error } = await db().from("sources").update(parsed.data).eq("id", id);
+  const { error } = await db()
+    .from("sources")
+    .update(
+      sourceUpdatePayload(
+        { name, base_url, requires_login, enabled, notes },
+        override,
+      ),
+    )
+    .eq("id", id);
   if (error) {
     console.error("updateSource failed", error);
     return { formError: "Couldn't save the source. Try again.", values };
   }
   revalidatePath("/", "layout");
   return { saved: true };
+}
+
+/** Ask the trigger to re-verify a source's template on its next run. */
+export async function relearnTemplate(formData: FormData): Promise<void> {
+  await assertSession();
+  const id = z.string().regex(SOURCE_ID_PATTERN).parse(formData.get("id"));
+  // Only after a verdict, and never for sources that don't use templates.
+  const { error } = await db()
+    .from("sources")
+    .update({ template_status: "unverified" })
+    .eq("id", id)
+    .in("template_status", ["verified", "failed"])
+    .or(
+      `access_method.is.null,access_method.not.in.(${TEMPLATELESS_ACCESS_METHODS.join(",")})`,
+    );
+  if (error) throw error;
+  revalidatePath("/", "layout");
 }
 
 export async function toggleSource(formData: FormData): Promise<void> {

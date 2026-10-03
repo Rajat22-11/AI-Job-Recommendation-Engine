@@ -15,6 +15,8 @@ import {
 import {
   activeFilterCount,
   POSTED_WITHIN,
+  SALARY_FILTER_LABELS,
+  SALARY_FILTERS,
   SORT_LABELS,
   SORTS,
   DEFAULT_STATUSES,
@@ -273,11 +275,10 @@ export function FilterPanel({
           name="salary"
           text="Salary"
           value={filters.salary}
-          options={[
-            { value: "any", label: "Any" },
-            { value: "meets", label: "Meets my minimum" },
-            { value: "unknown", label: "Not disclosed" },
-          ]}
+          options={SALARY_FILTERS.filter(
+            // `unknown` is only offered while an old link has it selected.
+            (s) => s !== "unknown" || filters.salary === "unknown",
+          ).map((s) => ({ value: s, label: SALARY_FILTER_LABELS[s] }))}
         />
         <Select
           id="posted"

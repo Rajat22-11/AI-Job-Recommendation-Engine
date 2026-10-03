@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { requireSession } from "@/lib/auth/session";
 import { formatDateTimeIST } from "@/lib/dates";
 import { db } from "@/lib/db/client";
+import { getLatestRun } from "@/lib/db/queries/runs";
 import { getSources } from "@/lib/db/queries/sources";
+import { lastUsedNote } from "@/lib/runs";
+import { templateState, templateStateSummary } from "@/lib/sources";
 import { expandTemplate } from "@/lib/templates";
 import { card } from "@/components/ui";
 import { SearchConfigForm, SourceForm } from "./forms";
@@ -21,11 +24,13 @@ async function getSearchConfig() {
 
 export default async function SettingsPage() {
   await requireSession();
-  const [config, sources] = await Promise.all([
+  const [config, sources, latestRun] = await Promise.all([
     getSearchConfig(),
     getSources(),
+    getLatestRun(),
   ]);
   const sample = { query: config.keywords[0], location: config.locations[0] };
+  const lastUsed = lastUsedNote(latestRun, config.updated_at);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -50,6 +55,12 @@ export default async function SettingsPage() {
             max_required_yoe: String(config.max_required_yoe),
             max_job_age_days: String(config.max_job_age_days),
             updatedLabel: formatDateTimeIST(config.updated_at),
+            updatedAt: config.updated_at,
+            lastRun: latestRun && {
+              text: lastUsed.text,
+              href: `/runs#run-${latestRun.runId}`,
+              startedAt: latestRun.startedAt,
+            },
           }}
         />
       </section>
@@ -64,10 +75,11 @@ export default async function SettingsPage() {
         </p>
         {sources.map((source) => (
           <details key={source.id} className={card}>
-            <summary className="flex tap cursor-pointer items-center justify-between px-4 font-medium">
+            <summary className="flex tap cursor-pointer flex-wrap items-center justify-between gap-x-3 px-4 py-2 font-medium">
               <span>{source.name}</span>
               <span className="text-sm font-normal text-text-muted">
-                {source.enabled ? "Enabled" : "Disabled"}
+                {source.enabled ? "Enabled" : "Disabled"} ·{" "}
+                {templateStateSummary(templateState(source))}
               </span>
             </summary>
             <div className="border-t border-border p-4">
@@ -84,7 +96,7 @@ export default async function SettingsPage() {
                   id: source.id,
                   name: source.name,
                   base_url: source.base_url,
-                  access_method: source.access_method,
+                  access_method: source.access_method ?? "",
                   search_url_template: source.search_url_template ?? "",
                   requires_login: source.requires_login,
                   enabled: source.enabled,

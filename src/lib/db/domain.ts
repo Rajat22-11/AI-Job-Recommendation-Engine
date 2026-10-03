@@ -71,20 +71,34 @@ export const WORK_MODE_LABELS: Record<WorkMode, string> = {
 };
 
 export const ACCESS_METHODS = [
+  "auto",
   "connector",
   "public_scrape",
   "browser_session",
+  "api",
+  "rss",
 ] as const;
 export type AccessMethod = (typeof ACCESS_METHODS)[number];
 
 export const ACCESS_METHOD_LABELS: Record<AccessMethod, string> = {
+  auto: "Auto-detect",
   connector: "Connector",
   public_scrape: "Public scrape",
   browser_session: "Browser session",
+  api: "API",
+  rss: "RSS",
 };
+
+/** Access methods that never use a search URL template. */
+export const TEMPLATELESS_ACCESS_METHODS: readonly AccessMethod[] = [
+  "connector",
+  "api",
+  "rss",
+];
 
 export const RUN_STATUSES = [
   "ok",
+  "partial",
   "needs_login",
   "captcha",
   "error",
@@ -94,10 +108,53 @@ export type RunStatus = (typeof RUN_STATUSES)[number];
 
 export const RUN_STATUS_LABELS: Record<RunStatus, string> = {
   ok: "OK",
+  partial: "Partial",
   needs_login: "Needs login",
   captcha: "Captcha",
   error: "Error",
   skipped: "Skipped",
+};
+
+export const TEMPLATE_STATUSES = ["unverified", "verified", "failed"] as const;
+export type TemplateStatus = (typeof TEMPLATE_STATUSES)[number];
+
+export const TEMPLATE_STATUS_LABELS: Record<TemplateStatus, string> = {
+  unverified: "Unverified",
+  verified: "Verified",
+  failed: "Failed",
+};
+
+export const TEMPLATE_ORIGINS = ["manual", "auto"] as const;
+export type TemplateOrigin = (typeof TEMPLATE_ORIGINS)[number];
+
+export const TEMPLATE_ORIGIN_LABELS: Record<TemplateOrigin, string> = {
+  manual: "Manual",
+  auto: "Learned",
+};
+
+export const QUERY_STATUSES = [
+  "done",
+  "pending",
+  "rate_limited",
+  "failed",
+  "skipped",
+] as const;
+export type QueryStatus = (typeof QUERY_STATUSES)[number];
+
+export const QUERY_STATUS_LABELS: Record<QueryStatus, string> = {
+  done: "Done",
+  pending: "Pending",
+  rate_limited: "Rate limited",
+  failed: "Failed",
+  skipped: "Skipped",
+};
+
+export const APPLY_URL_KINDS = ["employer", "board"] as const;
+export type ApplyUrlKind = (typeof APPLY_URL_KINDS)[number];
+
+export const APPLY_URL_KIND_LABELS: Record<ApplyUrlKind, string> = {
+  employer: "Employer site",
+  board: "Job board",
 };
 
 export function isOneOf<T extends string>(

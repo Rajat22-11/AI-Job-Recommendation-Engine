@@ -24,8 +24,9 @@ On a phone the feed's filter panel is about ten controls tall, and "Apply filter
 - `color-theme`: dark-by-default theming with a Dark / Light / System preference stored in a cookie and rendered server-side.
 
 ### Modified Capabilities
+- `app-hosting`: the "Light theme only" requirement is removed in favour of `color-theme`.
 
-None declared. The requirements being superseded (`job-feed` "URL-driven filters" and `app-hosting` "Light theme only") live in the unarchived `implement-ui` change, not in `openspec/specs/`. Archive `implement-ui` first so its specs reach main; this change's archive then should reconcile the two superseded requirements.
+`job-feed` "URL-driven filters" is unchanged: it doesn't mention how filters are submitted, so automatic applying (`feed-auto-filter`) adds to it without contradicting it. Both depend on `implement-ui` being synced first.
 
 ## Impact
 

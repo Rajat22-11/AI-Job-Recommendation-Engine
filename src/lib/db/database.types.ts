@@ -112,6 +112,7 @@ export type Database = {
       jobs: {
         Row: {
           apply_url: string;
+          apply_url_kind: string | null;
           company: string;
           dedupe_key: string;
           employment_type: string | null;
@@ -138,6 +139,7 @@ export type Database = {
         };
         Insert: {
           apply_url: string;
+          apply_url_kind?: string | null;
           company: string;
           dedupe_key: string;
           employment_type?: string | null;
@@ -164,6 +166,7 @@ export type Database = {
         };
         Update: {
           apply_url?: string;
+          apply_url_kind?: string | null;
           company?: string;
           dedupe_key?: string;
           employment_type?: string | null;
@@ -187,6 +190,39 @@ export type Database = {
           summary?: string | null;
           title?: string;
           work_mode?: string | null;
+        };
+        Relationships: [];
+      };
+      runs: {
+        Row: {
+          config_snapshot: Json | null;
+          finished_at: string | null;
+          notified: boolean | null;
+          run_id: string;
+          started_at: string | null;
+          status: string | null;
+          summary: string | null;
+          trigger_id: string | null;
+        };
+        Insert: {
+          config_snapshot?: Json | null;
+          finished_at?: string | null;
+          notified?: boolean | null;
+          run_id: string;
+          started_at?: string | null;
+          status?: string | null;
+          summary?: string | null;
+          trigger_id?: string | null;
+        };
+        Update: {
+          config_snapshot?: Json | null;
+          finished_at?: string | null;
+          notified?: boolean | null;
+          run_id?: string;
+          started_at?: string | null;
+          status?: string | null;
+          summary?: string | null;
+          trigger_id?: string | null;
         };
         Relationships: [];
       };
@@ -223,8 +259,62 @@ export type Database = {
         };
         Relationships: [];
       };
+      source_run_queries: {
+        Row: {
+          created_at: string;
+          error: string | null;
+          id: string;
+          keyword: string | null;
+          location: string | null;
+          page: number | null;
+          results_found: number | null;
+          results_kept: number | null;
+          run_id: string;
+          source_id: string;
+          status: string;
+          url: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          error?: string | null;
+          id?: string;
+          keyword?: string | null;
+          location?: string | null;
+          page?: number | null;
+          results_found?: number | null;
+          results_kept?: number | null;
+          run_id: string;
+          source_id: string;
+          status?: string;
+          url?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          error?: string | null;
+          id?: string;
+          keyword?: string | null;
+          location?: string | null;
+          page?: number | null;
+          results_found?: number | null;
+          results_kept?: number | null;
+          run_id?: string;
+          source_id?: string;
+          status?: string;
+          url?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "source_run_queries_source_id_fkey";
+            columns: ["source_id"];
+            isOneToOne: false;
+            referencedRelation: "sources";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       source_runs: {
         Row: {
+          config_snapshot: Json | null;
           finished_at: string | null;
           id: string;
           jobs_found: number;
@@ -236,6 +326,7 @@ export type Database = {
           status: string;
         };
         Insert: {
+          config_snapshot?: Json | null;
           finished_at?: string | null;
           id?: string;
           jobs_found?: number;
@@ -247,6 +338,7 @@ export type Database = {
           status: string;
         };
         Update: {
+          config_snapshot?: Json | null;
           finished_at?: string | null;
           id?: string;
           jobs_found?: number;
@@ -269,37 +361,58 @@ export type Database = {
       };
       sources: {
         Row: {
-          access_method: string;
+          access_method: string | null;
           base_url: string;
+          consecutive_empty_runs: number;
           created_at: string;
           enabled: boolean;
           id: string;
+          last_success_at: string | null;
           name: string;
           notes: string | null;
           requires_login: boolean;
+          scrape_hints: Json;
           search_url_template: string | null;
+          template_notes: string | null;
+          template_origin: string | null;
+          template_status: string | null;
+          template_verified_at: string | null;
         };
         Insert: {
-          access_method: string;
+          access_method?: string | null;
           base_url: string;
+          consecutive_empty_runs?: number;
           created_at?: string;
           enabled?: boolean;
           id: string;
+          last_success_at?: string | null;
           name: string;
           notes?: string | null;
           requires_login?: boolean;
+          scrape_hints?: Json;
           search_url_template?: string | null;
+          template_notes?: string | null;
+          template_origin?: string | null;
+          template_status?: string | null;
+          template_verified_at?: string | null;
         };
         Update: {
-          access_method?: string;
+          access_method?: string | null;
           base_url?: string;
+          consecutive_empty_runs?: number;
           created_at?: string;
           enabled?: boolean;
           id?: string;
+          last_success_at?: string | null;
           name?: string;
           notes?: string | null;
           requires_login?: boolean;
+          scrape_hints?: Json;
           search_url_template?: string | null;
+          template_notes?: string | null;
+          template_origin?: string | null;
+          template_status?: string | null;
+          template_verified_at?: string | null;
         };
         Relationships: [];
       };
@@ -311,6 +424,7 @@ export type Database = {
           app_status: string | null;
           applied_on: string | null;
           apply_url: string | null;
+          apply_url_kind: string | null;
           company: string | null;
           dedupe_key: string | null;
           employment_type: string | null;

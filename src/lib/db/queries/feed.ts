@@ -1,7 +1,12 @@
 import "server-only";
 import { db } from "@/lib/db/client";
 import { toFeedJob, UUID_PATTERN, type FeedJob } from "@/lib/db/jobs";
-import { PAGE_SIZE, type FeedFilters } from "@/lib/feed/params";
+import {
+  hidesSkipped,
+  NEW_TODAY_FILTERS,
+  PAGE_SIZE,
+  type FeedFilters,
+} from "@/lib/feed/params";
 import {
   postedFilter,
   sanitizeSearch,
@@ -26,6 +31,20 @@ function filteredFeed(filters: FeedFilters, head: boolean) {
   if (filters.fit > 0) query = query.gte("fit_score", filters.fit);
   if (filters.salary === "meets") query = query.eq("salary_meets_min", true);
   if (filters.salary === "unknown") query = query.is("salary_meets_min", null);
+  // These two mirror salaryState() in src/lib/format.ts.
+  if (filters.salary === "not_disclosed") {
+    query = query
+      .or("salary_text.is.null,salary_text.eq.")
+      .is("salary_min_lpa", null)
+      .is("salary_max_lpa", null);
+  }
+  if (filters.salary === "unparsed") {
+    query = query
+      .is("salary_meets_min", null)
+      .or(
+        "salary_text.neq.,salary_min_lpa.not.is.null,salary_max_lpa.not.is.null",
+      );
+  }
   if (filters.seen24h) {
     query = query.gte(
       "first_seen_at",
@@ -81,13 +100,25 @@ export async function getFeedPage(filters: FeedFilters): Promise<FeedPage> {
   return { jobs: data.map(toFeedJob), total: count ?? 0 };
 }
 
-/** Active jobs first seen in the last 24 hours, any status. */
+/** Exactly the jobs NEW_TODAY_HREF lists: still new, any fit, any other filter. */
 export async function countNewToday(): Promise<number> {
-  const { count, error } = await db()
-    .from("job_feed")
-    .select("id", { count: "exact", head: true })
-    .eq("is_active", true)
-    .gte("first_seen_at", new Date(Date.now() - DAY_MS).toISOString());
+  const { count, error } = await filteredFeed(NEW_TODAY_FILTERS, true);
+  if (error) throw error;
+  return count ?? 0;
+}
+
+/**
+ * Skipped jobs the current filters would otherwise show, or null when the
+ * status filter already includes them.
+ */
+export async function countHiddenSkipped(
+  filters: FeedFilters,
+): Promise<number | null> {
+  if (!hidesSkipped(filters)) return null;
+  const { count, error } = await filteredFeed(
+    { ...filters, status: ["skipped"] },
+    true,
+  );
   if (error) throw error;
   return count ?? 0;
 }

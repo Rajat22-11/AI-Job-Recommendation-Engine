@@ -20,7 +20,9 @@ export interface FilterChip {
 
 const SALARY_CHIPS = {
   meets: "Meets my minimum",
-  unknown: "Salary not disclosed",
+  not_disclosed: "Salary not disclosed",
+  unparsed: "Salary not compared",
+  unknown: "Salary unknown",
 } as const;
 
 /** One chip per active non-default filter value. Sort and page never get one. */

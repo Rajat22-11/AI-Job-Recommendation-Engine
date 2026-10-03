@@ -2,10 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   formatFit,
   formatPosted,
-  formatSalary,
   formatSalaryRange,
   formatYoe,
   isNewJob,
+  salaryDisplay,
+  salaryState,
   splitSkills,
 } from "./format";
 
@@ -21,10 +22,37 @@ describe("formatYoe", () => {
 });
 
 describe("salary", () => {
-  it("falls back when undisclosed", () => {
-    expect(formatSalary(null)).toBe("Salary not disclosed");
-    expect(formatSalary("  ")).toBe("Salary not disclosed");
-    expect(formatSalary("₹12–18 LPA")).toBe("₹12–18 LPA");
+  const none = {
+    salaryText: null,
+    salaryMinLpa: null,
+    salaryMaxLpa: null,
+    salaryMeetsMin: null,
+  };
+
+  it("is not disclosed without text or figures", () => {
+    expect(salaryState(none)).toBe("not_disclosed");
+    expect(salaryState({ ...none, salaryText: "" })).toBe("not_disclosed");
+    expect(salaryState({ ...none, salaryText: "   " })).toBe("not_disclosed");
+    expect(salaryDisplay(none)).toBeNull();
+  });
+
+  it("is disclosed with figures but no text", () => {
+    const job = { ...none, salaryMinLpa: 10, salaryMaxLpa: 14 };
+    expect(salaryState(job)).toBe("not_compared");
+    expect(salaryDisplay(job)).toBe("₹10–14 LPA");
+  });
+
+  it("is not compared when text is given but not checked", () => {
+    const job = { ...none, salaryText: " Competitive + ESOPs " };
+    expect(salaryState(job)).toBe("not_compared");
+    expect(salaryDisplay(job)).toBe("Competitive + ESOPs");
+  });
+
+  it("is compared when checked either way", () => {
+    const job = { ...none, salaryText: "₹12–18 LPA", salaryMinLpa: 12 };
+    expect(salaryState({ ...job, salaryMeetsMin: true })).toBe("compared");
+    expect(salaryState({ ...job, salaryMeetsMin: false })).toBe("compared");
+    expect(salaryDisplay(job)).toBe("₹12–18 LPA");
   });
 
   it("formats numeric ranges", () => {

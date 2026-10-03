@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { applicationFormSchema } from "./application-schemas";
-import { quickActionPlan, statusChangePlan } from "./applications";
+import {
+  quickActionPlan,
+  removesApplication,
+  statusChangePlan,
+} from "./applications";
 
 const today = "2026-10-03";
 
@@ -37,6 +41,14 @@ describe("quickActionPlan", () => {
     expect(quickActionPlan("unsave", { applied_on: null }, today)).toEqual({
       kind: "delete",
     });
+  });
+
+  it("deletes on restore, so a skipped job is new again", () => {
+    expect(quickActionPlan("restore", { applied_on: null }, today)).toEqual({
+      kind: "delete",
+    });
+    expect(removesApplication("restore")).toBe(true);
+    expect(removesApplication("skip")).toBe(false);
   });
 });
 

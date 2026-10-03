@@ -17,10 +17,6 @@ export function formatYoe(
   return null;
 }
 
-export function formatSalary(salaryText: string | null): string {
-  return salaryText?.trim() || "Salary not disclosed";
-}
-
 /** "₹12–18 LPA" from the numeric range, or null. */
 export function formatSalaryRange(
   min: number | null,
@@ -30,6 +26,41 @@ export function formatSalaryRange(
     return `₹${num(min)}–${num(max)} LPA`;
   const one = min ?? max;
   return one !== null ? `₹${num(one)} LPA` : null;
+}
+
+export interface SalaryFields {
+  salaryText: string | null;
+  salaryMinLpa: number | null;
+  salaryMaxLpa: number | null;
+  salaryMeetsMin: boolean | null;
+}
+
+/**
+ * - `not_disclosed`: no salary text and no figures
+ * - `compared`: checked against the minimum (`salaryMeetsMin` set)
+ * - `not_compared`: a salary is given but wasn't checked
+ *
+ * The feed's `salary` filter mirrors these rules in its queries.
+ */
+export type SalaryState = "not_disclosed" | "compared" | "not_compared";
+
+export function salaryState(job: SalaryFields): SalaryState {
+  if (
+    !job.salaryText?.trim() &&
+    job.salaryMinLpa === null &&
+    job.salaryMaxLpa === null
+  ) {
+    return "not_disclosed";
+  }
+  return job.salaryMeetsMin === null ? "not_compared" : "compared";
+}
+
+/** The salary as posted, or the LPA range when there is no text. */
+export function salaryDisplay(job: SalaryFields): string | null {
+  return (
+    job.salaryText?.trim() ||
+    formatSalaryRange(job.salaryMinLpa, job.salaryMaxLpa)
+  );
 }
 
 export function formatFit(score: number | null): string {
