@@ -137,10 +137,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--poll-limit-minutes", type=float)
     args = parser.parse_args(argv)
 
-    base_url = os.environ.get("TRIGGER_URL", "").rstrip("/")
-    secret = os.environ.get("TRIGGER_SECRET", "")
-    if not base_url or not secret:
-        print("::error::TRIGGER_URL and TRIGGER_SECRET must be set")
+    base_url = os.environ.get("TRIGGER_URL", "").strip().rstrip("/")
+    secret = os.environ.get("TRIGGER_SECRET", "").strip()
+    problems = [f"{name} is empty or not passed to the job (add it under Settings > Secrets and variables > "
+                "Actions > Repository secrets)" for name, value in (("TRIGGER_URL", base_url),
+                                                                  ("TRIGGER_SECRET", secret)) if not value]
+    if base_url and not base_url.startswith(("https://", "http://")):
+        problems.append("TRIGGER_URL must start with https:// (for example https://my-service.onrender.com)")
+    if problems:
+        for problem in problems:
+            print(f"::error::{problem}")
         return 1
     settings = load_trigger_settings(Path(args.settings))
     for key in ("start_wait_seconds", "start_retry_interval_seconds", "poll_interval_seconds", "poll_limit_minutes"):
@@ -152,6 +158,9 @@ def main(argv: list[str] | None = None) -> int:
         return health_check(base_url, secret, settings)
     except Unreachable as exc:
         print(f"::error::the service at {base_url} could not be reached: {exc}")
+        return 1
+    except ValueError as exc:  # for example a malformed URL; never print the secret
+        print(f"::error::TRIGGER_URL is not a usable address ({exc}); expected https://<service>.onrender.com")
         return 1
 
 

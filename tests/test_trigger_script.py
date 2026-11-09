@@ -100,3 +100,24 @@ def test_health_mode(monkeypatch, capsys):
 def test_settings_file_supplies_wait_limits():
     settings = trigger.load_trigger_settings(REPO_ROOT / "config" / "settings.yaml")
     assert settings["poll_limit_minutes"] == 45 and settings["start_wait_seconds"] == 180
+
+
+@pytest.mark.parametrize("url, secret, expected", [
+    ("", "s", "TRIGGER_URL is empty"),
+    ("https://x.onrender.com", "", "TRIGGER_SECRET is empty"),
+    ("my-service.onrender.com", "s", "must start with https://"),
+])
+def test_bad_trigger_settings_are_named_before_any_request(monkeypatch, capsys, url, secret, expected):
+    calls = _script(monkeypatch, [])
+    monkeypatch.setenv("TRIGGER_URL", url)
+    monkeypatch.setenv("TRIGGER_SECRET", secret)
+    assert trigger.main(["health"]) == 1
+    assert expected in capsys.readouterr().out and calls == []
+
+
+def test_whitespace_around_pasted_values_is_ignored(monkeypatch):
+    calls = _script(monkeypatch, [(200, {"alerts": []})])
+    monkeypatch.setenv("TRIGGER_URL", "  https://x.onrender.com/\n")
+    monkeypatch.setenv("TRIGGER_SECRET", " s3cret\n")
+    assert trigger.main(["health"]) == 0
+    assert calls == [("POST", "https://x.onrender.com/health-check")]
