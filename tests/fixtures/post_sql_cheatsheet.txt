@@ -1,0 +1,33 @@
+Most people think Intermediate SQL is about writing longer queries.
+.
+.
+It isn't.
+
+It's about writing smarter queries.
+
+Save this cheatsheet.
+
+1. Master Filtering & Sorting
+
+☑ WHERE → Filter rows
+☑ ORDER BY → Sort results
+☑ LIMIT → Return specific rows
+☑ DISTINCT → Remove duplicate records
+
+2. Aggregate Data
+
+☑ COUNT() → Count records
+☑ GROUP BY → Group similar records
+☑ HAVING → Filter grouped results
+
+Best Resources
+
+☑ W3SCHOOLS → Learn SQL from basics to advanced, best platform for strong fundamentals
+☑ SQLBolt → Interactive SQL lessons with exercises.
+☑ LeetCode SQL 50 → Interview-focused SQL practice.
+
+Follow me for more such content.
+
+If you are new to SQL, checkout w3schools.com articles for strong fundamentals & great resources
+
+📌 Save this checklist. You'll come back to it every time you write or optimize SQL queries.

@@ -1,0 +1,21 @@
+# Wording of the prompt sent to Gemini when it reviews a borderline job.
+# Edit the text here; no code change is needed. Settings for the model itself are in settings.yaml (scoring.gemini).
+#
+# `instruction` is sent as written. Keep the JSON answer format in it: the code reads
+# {"score": <1-5>, "reason": "..."} back from the model and rejects anything else.
+#
+# `data_template` is filled in by the code for each job. These placeholders must stay:
+#   {criteria}      the candidate's search criteria (keywords, locations, salary, experience)
+#   {job}           the job's title, company, location, experience, salary, skills and a short summary
+#   {rules_score}   the score the rules gave the job
+#   {rules_reason}  the rules' explanation
+
+instruction: |
+  Rate how well this job fits the candidate's criteria on a whole-number scale of 1 (poor) to 5 (excellent).
+  Internships and roles restricted to a graduating batch fit poorly.
+  Answer only with JSON: {"score": <1-5>, "reason": "<one short sentence>"}.
+
+data_template: |
+  Criteria: {criteria}
+  Job: {job}
+  Rule-based estimate: {rules_score} ({rules_reason})

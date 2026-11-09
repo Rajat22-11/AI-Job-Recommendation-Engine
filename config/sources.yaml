@@ -1,0 +1,173 @@
+# Source registry: every website and LinkedIn profile the pipeline crawls.
+#
+# This file is the single source of truth. A target not listed here is never fetched.
+# Set `enabled: false` to pause a target without deleting it.
+# Never put tokens or passwords here; name a credential service (for example `apify`) instead.
+# Search keywords and locations live in the `search_config` table, not here.
+#
+# Common fields (required): id, name, fetch_method, enabled
+# Common fields (optional): base_url, notes
+# fetch_method values:
+#   open_api                -> needs `provider` (jobcode | himalayas | remotive | remoteok | workingnomads)
+#   rss_feed                -> needs `provider` (weworkremotely)
+#   web_page                -> needs `provider` (arc): a public page whose job list is embedded in it
+#   ats_board               -> needs `provider` (greenhouse | lever | ashby) and `companies` (board slugs)
+#   jobspy_board            -> needs `site` (indeed | naukri | glassdoor)
+#   apify_job_board         -> needs `provider` (naukri); optional `actor_id`, `max_searches`,
+#                              `max_jobs_per_search`, `freshness_days`. Runs on Apify; needs APIFY_TOKENS
+#   linkedin_profile_posts  -> needs `profile_url`; optional `posts_per_run`, `credential_service`
+# See docs/source-registry.md for how to add, disable or re-enable a target.
+
+sources:
+  # ---------- Open APIs and feeds ----------
+  - id: jobcode
+    name: Jobcode
+    base_url: https://jobcode.in/
+    fetch_method: open_api
+    provider: jobcode
+    enabled: true
+    category_ids: [48, 138, 140, 147]   # Freshers, Experienced, Trainee, Remote
+    excluded_category_ids: [52]         # Internships
+    lookback_days: 30
+
+  - id: himalayas
+    name: Himalayas
+    base_url: https://himalayas.app
+    fetch_method: open_api
+    provider: himalayas
+    enabled: true
+    max_pages: 3
+
+  - id: remotive
+    name: Remotive
+    base_url: https://remotive.com
+    fetch_method: open_api
+    provider: remotive
+    enabled: true
+    max_calls_per_day: 4                # Remotive asks for at most ~4 calls a day; data is delayed 24h
+
+  - id: remoteok
+    name: Remote OK
+    base_url: https://remoteok.com
+    fetch_method: open_api
+    provider: remoteok
+    enabled: true
+
+  - id: weworkremotely
+    name: We Work Remotely
+    base_url: https://weworkremotely.com
+    fetch_method: rss_feed
+    provider: weworkremotely
+    enabled: true
+    feeds:                              # public RSS feeds (robots.txt allows them)
+      - https://weworkremotely.com/categories/remote-programming-jobs.rss
+      - https://weworkremotely.com/categories/remote-back-end-programming-jobs.rss
+      - https://weworkremotely.com/categories/remote-full-stack-programming-jobs.rss
+    region_words: [anywhere, worldwide, global, asia, apac, india]   # keep only jobs open to India
+
+  - id: workingnomads
+    name: Working Nomads
+    base_url: https://www.workingnomads.com
+    fetch_method: open_api
+    provider: workingnomads
+    enabled: true
+    results_per_keyword: 50
+
+  - id: arc
+    name: Arc
+    base_url: https://arc.dev
+    fetch_method: web_page
+    provider: arc
+    enabled: true
+    skill_pages: [java, python, machine-learning, react]   # https://arc.dev/remote-jobs/<skill>
+    country_code: IN                    # keep jobs with no country restriction or listing India
+
+  # ---------- Company applicant-tracking boards ----------
+  - id: greenhouse
+    name: Greenhouse
+    base_url: https://job-boards.greenhouse.io
+    fetch_method: ats_board
+    provider: greenhouse
+    enabled: true
+    companies: [capco, showpad, pubmatic, 6sense, gatherai, addepar1, twilio, alphasense, shipbobinc, modulrfinance, kaseya]
+
+  - id: lever
+    name: Lever
+    base_url: https://jobs.lever.co
+    fetch_method: ats_board
+    provider: lever
+    enabled: false                      # enable once company slugs are added
+    companies: []
+
+  - id: ashby
+    name: Ashby
+    base_url: https://jobs.ashbyhq.com
+    fetch_method: ats_board
+    provider: ashby
+    enabled: false                      # enable once company slugs are added
+    companies: []
+
+  # ---------- Job boards via JobSpy (IP-sensitive) ----------
+  - id: indeed
+    name: Indeed India
+    base_url: https://in.indeed.com
+    fetch_method: jobspy_board
+    site: indeed
+    enabled: true
+
+  - id: naukri
+    name: Naukri
+    base_url: https://www.naukri.com
+    fetch_method: apify_job_board       # Naukri blocks direct requests (reCAPTCHA); an Apify actor reads it
+    provider: naukri
+    actor_id: srd836/naukri-jobs-scraper
+    max_searches: 6                     # keyword/location pairs per run
+    max_jobs_per_search: 10             # newest jobs only; keeps Apify cost to cents
+    freshness_days: 3
+    enabled: true
+
+  - id: glassdoor
+    name: Glassdoor
+    base_url: https://www.glassdoor.co.in
+    fetch_method: jobspy_board
+    site: glassdoor
+    enabled: true
+
+  # ---------- LinkedIn influencer profiles (latest posts via Apify) ----------
+  - id: li_swadesh_kumar
+    name: "LinkedIn: Swadesh Kumar"
+    base_url: https://www.linkedin.com/in/swadesh-kumar/
+    fetch_method: linkedin_profile_posts
+    profile_url: https://www.linkedin.com/in/swadesh-kumar/
+    posts_per_run: 3
+    credential_service: apify
+    enabled: true
+
+  - id: li_vishakha_singhal
+    name: "LinkedIn: Vishakha Singhal"
+    base_url: https://www.linkedin.com/in/vishakha-singhal-18983b1bb/
+    fetch_method: linkedin_profile_posts
+    profile_url: https://www.linkedin.com/in/vishakha-singhal-18983b1bb/
+    posts_per_run: 3
+    credential_service: apify
+    enabled: true
+
+# Sources the owner has enabled in the UI that this pipeline does NOT fetch, with the reason. Each run
+# records them as "skipped" with this text, so the Sources page never shows stale results for them.
+# The reasons were observed on 2026-11-08. Nothing here is bypassed: no logins, no challenges.
+not_fetched:
+  braintrust: Job board is login-gated; the pipeline never signs in.
+  contra: Opportunities page needs a login.
+  fiverr: Freelance marketplace behind login and bot checks; no public job feed.
+  flexjobs: Paid membership required.
+  foundit: Answers automated requests with HTTP 403 Access Denied (bot protection); not bypassed.
+  hiringcafe: robots.txt disallows its search and paging URLs, so only the home page may be read.
+  instahyre: Public pages carry no job data; job matches need a signed-in session.
+  jobspresso: robots.txt disallows every URL with a query string, which covers its job feeds and search.
+  lemonio: Application-based developer network behind login; no public listings.
+  toptal: Application-based talent network; no public listings.
+  turing: Job matches need a login or arrive by email; the public /jobs page lists none.
+  uplers: Login with reCAPTCHA; the pipeline never signs in or solves challenges.
+  upwork: Login and bot protection; no public search.
+  wellfound: Public pages sit behind a Cloudflare Turnstile challenge; not solved.
+  wttj: Search is login-gated.

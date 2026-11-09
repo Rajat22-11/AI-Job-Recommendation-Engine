@@ -1,0 +1,115 @@
+# Non-secret behaviour settings. Every key is documented in docs/configuration.md.
+# Secrets (tokens, keys, trigger secrets) never go here; they come from environment variables.
+# Unknown keys or invalid values stop the run with an error naming the key.
+
+fetching:
+  request_timeout_seconds: 30        # per HTTP request
+  max_retries: 2                     # extra attempts after a transient failure (timeouts, 5xx, 429)
+  retry_backoff_seconds: 3           # wait before the first retry; doubles on each retry
+  pacing_seconds: 1.5                # minimum gap between two requests to the same source
+  max_listings_per_source: 200       # stop reading a source after this many listings
+  user_agent: "job-aggregator/0.1 (personal job search; read-only)"
+
+matching:
+  # Search keywords in `search_config` are phrases ("java spring boot developer"), not exact title text.
+  # A keyword's "ratio" is the share of its significant words found as whole words in the text.
+  generic_words: ["developer", "engineer", "engineering", "software", "senior", "junior", "sr", "jr", "full",
+                  "the", "and", "for", "of", "in", "a", "an", "with", "to"]   # ignored when measuring a ratio
+  prefilter_min_ratio: 0.3           # a title/tag must reach this ratio for a whole-feed source (Remotive, ATS...)
+  score_min_ratio: 0.5               # title + skills + summary must reach this for the scorer to count a match
+
+jobspy:
+  country: india                     # passed to JobSpy as country_indeed
+  results_wanted: 20                 # per search term and location
+  hours_old: 72                      # only jobs posted within this window
+  max_searches_per_board: 12         # keyword x location combinations per board per run (spread across both)
+
+linkedin:
+  apify_actor_id: "harvestapi/linkedin-profile-posts"
+  max_posts_per_run: 15              # hard cap across all profiles, keeps Apify within the free credit
+  default_posts_per_profile: 3       # used when a profile entry has no posts_per_run
+  short_link_timeout_seconds: 15
+  hiring_markers:                    # a post needs one of these (case-insensitive) and an apply link
+    - "is hiring"
+    - "we are hiring"
+    - "we're hiring"
+    - "hiring alert"
+    - "job opening"
+  field_aliases:                     # labelled lines in a post, matched case-insensitively
+    company: ["company", "company name", "organisation", "organization"]   # else taken from "<X> IS HIRING"
+    role: ["role", "position", "job role", "designation", "job title"]
+    experience: ["experience", "exp", "experience required"]
+    batch: ["batch", "eligible batch", "graduation year", "passing year"]
+    location: ["location", "job location", "locations"]
+    skills: ["skills required", "skills", "required skills", "tech stack"]
+    stipend: ["stipend", "ctc", "salary", "package"]
+    apply_link: ["apply link", "apply here", "apply now", "link to apply", "apply"]
+
+processing:
+  remote_location_words: ["remote", "work from home", "wfh", "anywhere"]
+  hybrid_location_words: ["hybrid"]
+  # Cities recognised in a location; also used for the dedupe key's location part (first city found wins).
+  known_cities: ["pune", "mumbai", "navi mumbai", "thane", "ahmedabad", "gandhinagar", "vadodara", "surat",
+                 "bengaluru", "bangalore", "hyderabad", "chennai", "delhi", "new delhi", "gurugram", "gurgaon",
+                 "noida", "kolkata", "kochi", "indore", "jaipur", "chandigarh", "nagpur", "nashik"]
+  # Database allows only: pune, mumbai, gujarat, remote_india, remote_international, other.
+  location_buckets:                  # checked in order; first bucket with a matching word wins
+    pune: ["pune", "hinjawadi", "kharadi", "magarpatta", "baner"]
+    mumbai: ["mumbai", "navi mumbai", "thane", "powai", "andheri"]
+    gujarat: ["gujarat", "ahmedabad", "gandhinagar", "vadodara", "surat", "gift city"]
+  india_words: ["india", "indian", "ist"]
+  remote_without_country_bucket: remote_india   # bucket for a bare "Remote"; a source entry may override
+  role_tracks:                       # checked in order against the title; anything else is "other"
+    ml_ai: ["machine learning", "ml ", "ml engineer", " ai ", "ai engineer", "artificial intelligence",
+            "deep learning", "nlp", "llm", "genai", "generative ai", "computer vision", "data scientist"]
+    data: ["data engineer", "data analyst", "analytics", "etl", "big data", "bi developer", "power bi", "sql developer"]
+    full_stack: ["full stack", "fullstack", "full-stack", "mern", "mean stack"]
+    java_backend: ["java", "spring", "j2ee", "backend", "back end", "back-end", "microservices", "kotlin"]
+  usd_to_inr: 84.0                   # used to convert USD salaries to lakhs per annum
+
+persistence:
+  stale_after_days_unseen: 21        # mark a job inactive when not seen for this many days
+
+scoring:
+  weights:                           # added to a base of 3, then clamped to 1..5
+    keyword_match: 1.0
+    no_keyword_match: -1.0
+    location_match: 0.5
+    location_mismatch: -1.0
+    experience_over_limit: -2.0
+    salary_meets_min: 0.5
+    salary_below_min: -1.0
+    internship_or_batch: -2.0
+    senior_title: -1.5               # senior-sounding title while the listing states no years of experience
+  internship_words: ["intern", "internship", "trainee"]
+  seniority_words: ["senior", "sr", "lead", "principal", "staff", "architect", "manager", "head", "director"]
+  batch_pattern: "\\b(batch|graduat\\w*|passing out|passout)\\b[^\\n]{0,20}\\b20\\d\\d\\b"
+  borderline_scores: [3]             # scores the optional model may review
+  gemini:
+    enabled: true                    # reviews borderline (score 3) jobs; needs GEMINI_API_KEYS
+    model: "gemini-3.5-flash-lite"    # fast and low cost; gemini-2.0-flash and 2.5-flash-lite are no longer open to new users
+    max_jobs_per_run: 20
+    request_timeout_seconds: 30
+    min_seconds_between_calls: 4.5   # keeps calls under Gemini's per-minute limit (a burst got HTTP 429)
+
+health:
+  consecutive_empty_runs_alert: 3    # alert when a source returns zero this many runs in a row
+  baseline_runs: 7                   # recent runs used for a source's average
+  low_ratio_alert: 0.2               # alert when a run returns below this share of the average
+  missed_run_hours: 26               # alert when no run has been recorded for this long
+
+notifications:
+  channel: ntfy                      # ntfy | none
+  ntfy_server: "https://ntfy.sh"     # the topic itself is the secret NTFY_TOPIC
+  top_matches_count: 5
+  min_score_for_top_match: 4
+  heartbeat_enabled: false           # pings HEARTBEAT_URL after a successful run when true
+
+trigger:
+  start_wait_seconds: 180            # how long the GitHub workflow keeps retrying to reach a sleeping service
+  start_retry_interval_seconds: 15
+  poll_interval_seconds: 60          # status polling interval; also keeps a free instance awake
+  poll_limit_minutes: 45             # the workflow fails if the run has not finished by then
+  repeat_trigger_behaviour: return_finished   # return_finished | start_new
+  schedule_hint: "daily 15:17 UTC (20:47 IST)"   # informational; the real cron lives in the workflow file
+  stale_running_minutes: 90          # a run still marked running after this long is treated as interrupted

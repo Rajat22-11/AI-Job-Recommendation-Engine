@@ -1,0 +1,106 @@
+{
+ "took": 2,
+ "timed_out": false,
+ "_shards": {
+  "total": 1,
+  "successful": 1,
+  "skipped": 0,
+  "failed": 0
+ },
+ "hits": {
+  "total": {
+   "value": 394,
+   "relation": "eq"
+  },
+  "max_score": 6.9907713,
+  "hits": [
+   {
+    "_index": "jobsapi",
+    "_id": "1935727",
+    "_score": 6.9907713,
+    "_source": {
+     "id": 1935727,
+     "title": "Java developer",
+     "slug": "java-developer-blackbird-collective-1935727",
+     "company": "Blackbird Collective",
+     "company_slug": "blackbird-collective",
+     "job_key": "blackbird-collective|java-developer",
+     "category_name": "Development",
+     "description": "<p></p><h2>Company Description</h2><p>Blackbird Collective is an HR organization that helps startups and&nbsp;established companies find employees that match their current needs. We&nbsp;work on freelance and interim recruitment projects for clients based in Germany, most of which are located in Berlin.</p><p></p><h2>Job Description</h2><p>At the moment, we are collaborating with a few innovative startups searching for Backend Engineers who could support their existing teams. We continue to gain the majority of our work through recommendations so we are confident that our clients are great emp",
+     "position_type": "ft",
+     "tags": [
+      "java",
+      "aws"
+     ],
+     "all_tags": [],
+     "locations": [
+      "Germany"
+     ],
+     "location_base": "",
+     "location_extra": "",
+     "pub_date": "2026-10-12T11:33:32.791436+00:00",
+     "apply_option": "with_your_ats",
+     "apply_email": "",
+     "apply_email_subject": "",
+     "apply_url": "https://jobs.smartrecruiters.com/BlackbirdCollective/743999746512657-java-developer-germany",
+     "external_id": "2031587",
+     "source": "feed",
+     "premium": false,
+     "premium_subscription": false,
+     "instructions": "",
+     "expired": false,
+     "use_ats": false,
+     "salary_range": "",
+     "salary_range_short": "",
+     "annual_salary_usd": null,
+     "experience_level": "SENIOR_LEVEL"
+    }
+   },
+   {
+    "_index": "jobsapi",
+    "_id": "1972222",
+    "_score": 6.6180735,
+    "_source": {
+     "id": 1972222,
+     "title": "Java Gen AI  Engineer",
+     "slug": "java-gen-ai-engineer-crackajack-digital-solutions-llc-1972222",
+     "company": "CrackaJack Digital Solutions LLC",
+     "company_slug": "crackajack-digital-solutions-llc",
+     "job_key": "crackajack-digital-solutions-llc|java-gen-ai-engineer",
+     "category_name": "Development",
+     "description": "<p>Role: Java AI Engineer Overview We are seeking a Senior Java Engineer with hands-on GenAI engineering experience to design and implement AI-driven solutions, Agentic workflows, and performance engineering frameworks. This role requires a strong blend of technical depth, practical AI engineering experience, and a genuine passion for the evolving AI landscape. This is a flexible engagement, with openness to global talent. The right candidate will play a critical role in accelerating AI adoption and scaling internal capabilities. Key Responsibilities Design and implement AI-driven solutions al",
+     "position_type": "ft",
+     "tags": [
+      "java",
+      "engineer",
+      "aws",
+      "azure",
+      "cloud"
+     ],
+     "all_tags": [],
+     "locations": [
+      "USA"
+     ],
+     "location_base": "",
+     "location_extra": "",
+     "pub_date": "2026-10-25T11:33:11.192166-04:00",
+     "apply_option": "with_your_ats",
+     "apply_email": "",
+     "apply_email_subject": "",
+     "apply_url": "https://crackajackdigitalsolutionsllc.applytojob.com/apply/Vj6oFeCVt3/Java-Gen-AI-Engineer",
+     "external_id": "2068780",
+     "source": "feed",
+     "premium": false,
+     "premium_subscription": false,
+     "instructions": "",
+     "expired": false,
+     "use_ats": false,
+     "salary_range": "",
+     "salary_range_short": "",
+     "annual_salary_usd": null,
+     "experience_level": "SENIOR_LEVEL"
+    }
+   }
+  ]
+ }
+}

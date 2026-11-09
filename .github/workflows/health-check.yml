@@ -1,0 +1,32 @@
+# Asks the service to check for a missed daily run and for sources stuck at zero, at a different hour
+# from the daily run. The service sends an ntfy alert; this workflow also fails so GitHub emails the owner.
+name: Health check (trigger)
+
+on:
+  schedule:
+    - cron: "43 3 * * *"    # 03:43 UTC = 09:13 IST
+  workflow_dispatch: {}
+
+concurrency:
+  group: health-check
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install trigger dependency
+        run: pip install PyYAML==6.0.2
+      - name: Run the health check
+        env:
+          TRIGGER_URL: ${{ secrets.TRIGGER_URL }}
+          TRIGGER_SECRET: ${{ secrets.TRIGGER_SECRET }}
+        run: python scripts/trigger_and_wait.py health

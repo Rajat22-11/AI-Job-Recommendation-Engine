@@ -1,0 +1,139 @@
+{
+ "comments": "Search results come 20 to a page. Pass ?page=2, ?page=3 and so on for more; there is no cursor on search. Cursor pagination (nextCursor) is only on /jobs/api, the browse feed. 13/03/2026: The API has been updated to include the companySlug field in the response.",
+ "updatedAt": 1793907172,
+ "offset": 0,
+ "limit": 20,
+ "totalCount": 579,
+ "jobs": [
+  {
+   "title": "Java Lead",
+   "excerpt": "TO GET TIMELY UPDATES ON JOB OPENINGS, FEEL FREE TO JOIN OUR COMMUNITY @ (4L+ MEMBERS FROM 35+ COUNTRIES) Job Overview:As a Java Lead, you are responsible for providing technical leadership and guidance to a team of Java developers, overseeing the design, development, and delivery of Java-based software projects.",
+   "companyName": "Cloud Counselage Pvt Ltd",
+   "companySlug": "cloud-counselage-pvt-ltd",
+   "companyLogo": "https://cdn-images.himalayas.app/1a19q8s3wo8izvts0yio8wna692r",
+   "employmentType": "Full Time",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "India"
+   ],
+   "timezoneRestrictions": [
+    5.5
+   ],
+   "categories": [
+    "Lead-Java-Software-Engineer",
+    "Java-Developer",
+    "Software-Engineer",
+    "Technical-Lead",
+    "Backend-Engineer",
+    "Java-Team-Lead",
+    "Java-Tech-Lead",
+    "Lead-Java-Engineer",
+    "Java-Technical-Lead",
+    "Lead-Développeur-Java",
+    "Java-Development-Leadership",
+    "Dev-Lead"
+   ],
+   "parentCategories": [
+    "Developer"
+   ],
+   "description": "<p><strong>TO GET TIMELY UPDATES ON JOB OPENINGS, FEEL FREE TO JOIN OUR COMMUNITY @  (4L+ MEMBERS FROM 35+ COUNTRIES)</strong></p><h3>Job Overview:</h3><p>As a Java Lead, you are responsible for providing technical leadership and guidance to a team of Java developers, overseeing the design, development, and delivery of Java-based software projects. Your role involves leading architectural discussions, mentoring team members, and ensuring the successful implementation of best practices and standards. </p><h3>\n<br>Whats For The Candidate:</h3><ol>\n<li>Competitive salary based on experience.</li>\n<li>Opportunities for professional development and career growth.</li>\n<li>A collaborative and dynamic work environment.</li>\n</ol><p>﻿<strong>Key Responsibilities:</strong></p><ol>\n<li>\n<strong>Technical Leadership:</strong> Provide technical direction and leadership to the Java development team, including guiding architectural decisions, setting coding standards, and enforcing best practices.</li>\n<li>\n<strong>Team Management:</strong> Manage and mentor a team of Java developers, providing coaching, feedback, and support to foster their professional growth and development.</li>\n<li>\n<strong>Project Planning and Execution:</strong> Collaborate with project managers and stakeholders to plan project timelines, allocate resources, and ensure the successful delivery of Java-based software projects.</li>\n<li>\n<strong>Architecture Design:</strong> Lead the design and development of scalable, maintainable, and high-performance Java applications, including defining system architecture, component design, and integration patterns.</li>\n<li>\n<strong>Code Reviews and Quality Assurance:</strong> Conduct code reviews to ensure adherence to coding standards, best practices, and design principles. Implement processes for code quality assurance, testing, and continuous integration.</li>\n<li>\n<strong>Technical Problem-Solving:</strong> Provide guidance and support to the development team in troubleshooting technical issues, debugging code, and implementing effective solutions.</li>\n<li>\n<strong>Collaboration and Communication:</strong> Collaborate with cross-functional teams, including product managers, designers, QA engineers, and DevOps engineers, to ensure alignment and successful delivery of software projects. Communicate technical concepts and decisions effectively to both technical and non-technical stakeholders.</li>\n<li>\n<strong>Continuous Improvement:</strong> Stay abreast of emerging technologies, trends, and best practices in Java development. Drive continuous improvement initiatives within the team, including process optimization, tooling enhancements, and knowledge sharing sessions.</li>\n</ol><h3>Key Skills and Qualifications:</h3><ol>\n<li>\n<strong>Advanced Java Proficiency:</strong> Expert-level proficiency in Java programming language, including advanced features such as multithreading, concurrency, and Java 8/11 features like lambda expressions and streams.</li>\n<li>\n<strong>Spring Framework:</strong> Extensive experience with the Spring Framework and related projects (Spring Boot, Spring MVC, Spring Data, etc.) for building enterprise-scale Java applications.</li>\n<li>\n<strong>Software Architecture:</strong> Strong understanding of software architecture principles and design patterns, with experience in designing and implementing scalable, modular, and maintainable Java applications.</li>\n<li>\n<strong>Database Technologies:</strong> Proficiency in relational database concepts and SQL, with experience in designing and optimizing database schemas, writing complex queries, and working with ORM frameworks like Hibernate.</li>\n<li>\n<strong>Cloud Technologies:</strong> Familiarity with cloud platforms like AWS, Azure, or Google Cloud Platform (GCP), and experience in deploying and managing Java applications in cloud environments.</li>\n<li>\n<strong>Microservices Architecture:</strong> Experience in designing and developing microservices-based architectures using Java and Spring Boot, including API design, service discovery, and distributed tracing.</li>\n<li>\n<strong>Containerization and Orchestration:</strong> Experience with Docker for containerization and Kubernetes for container orchestration, including deploying and managing containerized Java applications at scale.</li>\n<li>\n<strong>Agile Methodologies:</strong> Proficiency in Agile software development methodologies (e.g., Scrum, Kanban), with experience leading Agile teams and driving continuous improvement initiatives.</li>\n<li>\n<strong>Leadership and Communication:</strong> Strong leadership skills with the ability to inspire and motivate team members, foster collaboration, and communicate effectively with stakeholders at all levels.</li>\n</ol><p>As a Java Lead, you play a pivotal role in the success of Java-based software projects by providing technical leadership, guidance, and mentorship to the development team. Your expertise in Java technologies, coupled with your leadership skills and collaborative mindset, enables you to drive innovation, ensure code quality, and deliver high-impact software solutions that meet the needs of the business and its stakeholders.</p><h3>Job Location: Remote/Hybrid/In-Office</h3><p><strong>Note:</strong><strong>To accomplish our vision, our Flagship Event</strong>'<strong>IAC VISION 2030</strong>' would provide employment and career opportunities for millions of job-ready interns, freshers and professionals in our Industry Academia Community (IAC).</p><p>By submitting your application you accept the Terms and Conditions.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1792200266,
+   "expiryDate": 1797384265,
+   "applicationLink": "https://himalayas.app/companies/cloud-counselage-pvt-ltd/jobs/java-lead?utm_source=api",
+   "guid": "https://himalayas.app/companies/cloud-counselage-pvt-ltd/jobs/java-lead"
+  },
+  {
+   "title": "Java Devloper",
+   "excerpt": "Exp: 3 Years to 8 Years CTC: upto 15 LPABS/MS degree in Computer Science, Engineering or a related subject Proven hands-on Software Development experience Proven working experience in Java development Hands on experience in designing and developing applications using Java EE platforms Object Oriented analysis and design using common design patterns.",
+   "companyName": "Neo Credence Consultancy",
+   "companySlug": "neo-credence-consultancy",
+   "companyLogo": "https://cdn-images.himalayas.app/j29ikmwxozrq283itms8je0b2wsf",
+   "employmentType": "Full Time",
+   "minSalary": 1500000,
+   "maxSalary": 1500000,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Mid-level"
+   ],
+   "currency": "INR",
+   "locationRestrictions": [
+    "India"
+   ],
+   "timezoneRestrictions": [
+    5.5
+   ],
+   "categories": [
+    "Java-Developer",
+    "Java-EE-Developer",
+    "Backend-Engineer",
+    "Software-Developer",
+    "Java-Programmer",
+    "Java-Development",
+    "JVM-Developer",
+    "Java-Application-Developer",
+    "Java-Based-Application-Developer",
+    "Java-Software-Development",
+    "Developer"
+   ],
+   "parentCategories": [
+    "Developer"
+   ],
+   "description": "<p>Exp: 3 Years to 8 Years</p><h3>CTC: upto 15 LPA</h3><p>BS/MS degree in Computer Science, Engineering or a related subject<br>Proven hands-on Software Development experience<br>Proven working experience in Java development<br>Hands on experience in designing and developing applications using Java EE platforms<br>Object Oriented analysis and design using common design patterns.<br>Profound insight of Java and JEE internals (Classloading, Memory Management, Transaction management etc)<br>Excellent knowledge of Relational Databases, SQL and ORM technologies (JPA2, Hibernate)<br>Experience in the Spring Framework<br>Experience as a Sun Certified Java Developer<br>Experience in developing web applications using at least one popular web framework (JSF, Wicket, GWT, Spring MVC)</p><h3>Experience with test-driven development</h3><p>BE Computer Science And Relevant Qualification </p><p>Neo Credence has specialized recruiters &amp; for every profile we assign a specialized recruiter devoted fully to that particular operation, resulting in timely follow-ups and successful hiring. Our motto is to provide our clients the most accurately matched profiles and help them by attracting and retaining candidates and consumers best suited for their needs.</p><p>We connect high-caliber candidates with startups and reputed companies. We will work with you to fully understand your business and your target audience, and design our strategy accordingly &amp; will streamline our process as per your requirement. Neo Credence Team follows an unconventional mode of hiring that comprises of serious talent acquisition and rigorous follow-ups . We deliver even on the toughest hiring mandates.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1792737063,
+   "expiryDate": 1797921063,
+   "applicationLink": "https://himalayas.app/companies/neo-credence-consultancy/jobs/java-devloper?utm_source=api",
+   "guid": "https://himalayas.app/companies/neo-credence-consultancy/jobs/java-devloper"
+  },
+  {
+   "title": "Java Full Stack Developer, 6-12 years of experience, Work from Home",
+   "excerpt": "We are looking for a Java Full Stack Developer with minimum 6years of relevant hands onexperiencein the below technologies.",
+   "companyName": "BayApps, Inc.",
+   "companySlug": "bayapps-inc",
+   "companyLogo": "https://cdn-images.himalayas.app/gxgd67pbq9lsz48o70fvcoryokl4",
+   "employmentType": "Full Time",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "India"
+   ],
+   "timezoneRestrictions": [
+    5.5
+   ],
+   "categories": [
+    "Java-Full-Stack-Developer",
+    "Fullstack-Development",
+    "Java-Development",
+    "Web-Development",
+    "Software-Engineer",
+    "Full-Stack-Java-Developer",
+    "Senior-Full-Stack-Java-Developer",
+    "Senior-Java-Full-Stack-Developer",
+    "Java-Full-Stack-Engineer",
+    "Full-Stack-Java-Engineer",
+    "Senior-Full-Stack-Developer-React-And-Java",
+    "Remote-Java-Developer",
+    "Senior-Full-Stack-Developer-(Java-+-React)",
+    "Remote-Senior-Java-Developer"
+   ],
+   "parentCategories": [
+    "Developer"
+   ],
+   "description": "<p>We are looking for a Java Full Stack Developer with minimum 6years of relevant hands onexperiencein the below technologies.</p><ul>\n<li>Java 8<br>\n</li>\n<li>Spring Boot<br>\n</li>\n<li>Angular JS<br><br>\n</li>\n</ul><div>Along with experienceof<br>\n</div><ul>\n<li>Core Java &amp; Advanced Java, web portaltechnology, strong concept of object-oriented and design principles, designpatterns<br>\n</li>\n<li>Typescript, ES6, HTML, CSS, jQuery.<br>\n</li>\n</ul><br><h3>Benefits</h3><p>Best in the industry commensurate to experience</p><br><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1793378838,
+   "expiryDate": 1798562838,
+   "applicationLink": "https://himalayas.app/companies/bayapps-inc/jobs/java-full-stack-developer-6-12-years-of-experience-work-from-home?utm_source=api",
+   "guid": "https://himalayas.app/companies/bayapps-inc/jobs/java-full-stack-developer-6-12-years-of-experience-work-from-home"
+  }
+ ]
+}

@@ -1,0 +1,126 @@
+[
+ {
+  "jobId": "051126935112",
+  "title": "Software Engineer",
+  "company": "Bajaj Finance",
+  "companyRating": 3.9,
+  "companyReviewsCount": 11029,
+  "experience": "1-4 Yrs",
+  "salary": null,
+  "workMode": null,
+  "locations": [
+   "Pune"
+  ],
+  "skills": [
+   "SOAP",
+   "Maven",
+   "Integration",
+   "Architecture",
+   "Cloud",
+   "Development",
+   "Debugging",
+   "Java Development"
+  ],
+  "jdSnippet": "Requirements . Graduate in Computers, IT, Electronics, or related field1 to 4 years of ...",
+  "postedText": "3 days ago",
+  "postedDaysAgo": 3,
+  "postedDate": "2026-11-05",
+  "jobUrl": "https://www.naukri.com/job-listings-software-engineer-bajaj-finance-limited-pune-1-to-4-years-051126935112",
+  "searchKeywords": "java developer",
+  "searchLocation": "Pune",
+  "scrapedAt": "2026-11-08T17:57:10.630Z"
+ },
+ {
+  "jobId": "051126932712",
+  "title": "Software Engineer",
+  "company": "Bajaj Finance",
+  "companyRating": 3.9,
+  "companyReviewsCount": 11029,
+  "experience": "2-3 Yrs",
+  "salary": null,
+  "workMode": null,
+  "locations": [
+   "Pune"
+  ],
+  "skills": [
+   "Microsoft Azure",
+   "Manual testing",
+   "Agile methodology",
+   "Continuous Integration",
+   "Tools",
+   "Analytics",
+   "Automation tools",
+   "Jenkins"
+  ],
+  "jdSnippet": "Required Qualifications and Experience . Graduation in computers / IT. Experience in bu...",
+  "postedText": "3 days ago",
+  "postedDaysAgo": 3,
+  "postedDate": "2026-11-05",
+  "jobUrl": "https://www.naukri.com/job-listings-software-engineer-bajaj-finance-limited-pune-2-to-3-years-051126932712",
+  "searchKeywords": "java developer",
+  "searchLocation": "Pune",
+  "scrapedAt": "2026-11-08T17:57:10.630Z"
+ },
+ {
+  "jobId": "060826015740",
+  "title": "Java Developer",
+  "company": "Airtel",
+  "companyRating": 3.8,
+  "companyReviewsCount": 19429,
+  "experience": "2-3 Yrs",
+  "salary": null,
+  "workMode": null,
+  "locations": [
+   "Pune"
+  ],
+  "skills": [
+   "Algorithms",
+   "Spring",
+   "Problem solving",
+   "Rest",
+   "Boot",
+   "Data structures",
+   "Spring Boot",
+   "Microservices"
+  ],
+  "jdSnippet": "Job Description: Java DeveloperWe are looking for a Java/J2EE Developer with hands-on ...",
+  "postedText": "2 days ago",
+  "postedDaysAgo": 2,
+  "postedDate": "2026-11-06",
+  "jobUrl": "https://www.naukri.com/job-listings-java-developer-airtel-pune-2-to-3-years-060826015740",
+  "searchKeywords": "java developer",
+  "searchLocation": "Pune",
+  "scrapedAt": "2026-11-08T17:57:10.630Z"
+ },
+ {
+  "jobId": "131026048418",
+  "title": "Java Full Stack Developer",
+  "company": "Infosys",
+  "companyRating": 3.5,
+  "companyReviewsCount": 54427,
+  "experience": "2-5 Yrs",
+  "salary": null,
+  "workMode": "Hybrid",
+  "locations": [
+   "Pune",
+   "Chennai",
+   "Bengaluru"
+  ],
+  "skills": [
+   "Java",
+   "React.js",
+   "Angular",
+   "Spring Boot",
+   "Java Fullstack",
+   "Microservices"
+  ],
+  "jdSnippet": "Required Skills. Backend Angular (preferred) or React Kubernetes (preferred)",
+  "postedText": "2 days ago",
+  "postedDaysAgo": 2,
+  "postedDate": "2026-11-06",
+  "jobUrl": "https://www.naukri.com/job-listings-java-full-stack-developer-infosys-pune-chennai-bengaluru-2-to-5-years-131026048418",
+  "searchKeywords": "java developer",
+  "searchLocation": "Pune",
+  "scrapedAt": "2026-11-08T17:57:10.630Z"
+ }
+]

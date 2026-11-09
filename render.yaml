@@ -1,0 +1,34 @@
+# Render Blueprint for the job-aggregator web service.
+# Secrets are declared with `sync: false`: Render asks for their values in the dashboard; none are stored here.
+# Render's own cron jobs are not used (they are not free); GitHub Actions calls POST /runs once a day.
+services:
+  - type: web
+    name: job-aggregator
+    runtime: python
+    plan: free
+    region: singapore
+    buildCommand: pip install .
+    startCommand: uvicorn job_aggregator.service.main:create_app_from_environment --factory --host 0.0.0.0 --port $PORT
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.2"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: APIFY_TOKENS          # one or more, separated by commas
+        sync: false
+      - key: GEMINI_API_KEYS       # optional; only used when scoring.gemini.enabled is true
+        sync: false
+      - key: NTFY_TOPIC
+        sync: false
+      - key: TRIGGER_SECRETS       # one or more, separated by commas; GitHub holds one of them
+        sync: false
+      - key: HEARTBEAT_URL         # optional
+        sync: false
+      - key: SKIP_FETCH_METHODS    # optional, e.g. jobspy_board when the owner's PC fetches the job boards
+        sync: false
+      - key: SPIKE_FAKE_PIPELINE_MINUTES   # spike only (tasks.md 16.4); remove after the spike
+        sync: false
